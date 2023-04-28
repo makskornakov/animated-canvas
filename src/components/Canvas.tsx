@@ -1,8 +1,7 @@
-import { useCallback } from 'react';
-import { useEffect, useRef, useState } from 'react';
-import Fps from './Fps';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { CanvasElement, CanvasContainer, PageContainer } from './Canvas.styled';
 import Settings from './Settings';
+import Fps from './Fps';
 
 export interface Settings {
   size: number;
@@ -37,14 +36,9 @@ export default function Canvas() {
 
   // Tick function (called every frame)
   const tick = useCallback(
-    (frames: number, timeStamp?: number) => {
-      const canvas = canvasRef.current;
-      if (!canvas) return;
-
-      const ctx = canvas.getContext('2d');
-      if (!ctx) return;
-
-      draw(ctx, settings);
+    (ctx: CanvasRenderingContext2D, frames: number, timeStamp?: number) => {
+      // Draw the frame
+      tickDraw(ctx, settings);
 
       // Update frame rate
       frames++;
@@ -57,14 +51,21 @@ export default function Canvas() {
 
       // Handle next frame
       animationRef.current = requestAnimationFrame(
-        tick.bind(null, frames, timeStamp || lastTimeStamp),
+        tick.bind(null, ctx, frames, timeStamp || lastTimeStamp),
       );
     },
     [settings],
   );
 
   useEffect(() => {
-    animationRef.current = requestAnimationFrame(tick.bind(null, 0));
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    console.log('Animation start');
+    animationRef.current = requestAnimationFrame(tick.bind(null, ctx, 0));
 
     return () => {
       if (animationRef.current) {
@@ -84,22 +85,24 @@ export default function Canvas() {
     </PageContainer>
   );
 }
-export const draw = function (ctx: CanvasRenderingContext2D, settings: Settings) {
-  console.log('draw');
+
+export const tickDraw = function (ctx: CanvasRenderingContext2D, settings: Settings) {
+  console.log('drawing tick');
 
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
   const { size } = settings;
   // get the value between 0.9 and 1.1
 
   ctx.fillStyle = 'red';
-  for (let i = 0; i < 100; i++) {
-    const randS = 0.9 + Math.random() * 0.2;
-    const updatedSize = size * randS;
-    const randomX = Math.random() * ctx.canvas.width;
-    const randomY = Math.random() * ctx.canvas.height;
-    ctx.beginPath();
-    // ctx.arc(randomX, randomY, updatedSize, 0, Math.PI * 2);
-    ctx.arc(ctx.canvas.width / 2, ctx.canvas.height / 2, size, 0, Math.PI * 2);
-    ctx.fill();
-  }
+  // for (let i = 0; i < 1; i++) {
+  const randS = 0.9 + Math.random() * 0.2;
+  const updatedSize = size * randS;
+  const randomX = Math.random() * ctx.canvas.width;
+  const randomY = Math.random() * ctx.canvas.height;
+  ctx.beginPath();
+  // ctx.arc(randomX, randomY, updatedSize, 0, Math.PI * 2);
+  ctx.arc(ctx.canvas.width / 2, ctx.canvas.height / 2, size, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.closePath();
+  // }
 };
