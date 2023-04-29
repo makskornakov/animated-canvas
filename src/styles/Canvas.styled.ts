@@ -1,4 +1,4 @@
-import styled, { keyframes } from 'styled-components';
+import styled, { css, keyframes } from 'styled-components';
 
 export const FpsSpan = styled.span<{ fps: number }>`
   position: absolute;
@@ -88,19 +88,8 @@ export const DetailCard = styled.div`
   background-color: var(--platinum);
   border-radius: 0.5em;
 
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5em;
   color: #090909;
-  padding-top: 1em;
-
-  & > span {
-    font-size: 0.9rem;
-    width: 90%;
-    display: flex;
-    justify-content: space-between;
-  }
+  padding-top: 0.5em;
 
   @media (max-width: 1024px) {
     width: 48%;
@@ -108,12 +97,38 @@ export const DetailCard = styled.div`
   }
 `;
 
+export const ConsoleContainer = styled.div`
+  margin-top: 1em;
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5em;
+
+  & > span {
+    /* outline: 1px solid red; */
+
+    font-size: 0.9rem;
+    width: 90%;
+    display: flex;
+    justify-content: space-between;
+
+    & > span:first-child {
+      /* outline: 1px solid red; */
+      width: 70%;
+    }
+  }
+`;
+
 export const Indicator = styled.span`
+  /* outline: 1px solid blue; */
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 30%;
   text-align: center;
-  line-height: 1.2rem;
   font-size: 1.2rem;
-  /* transition: color 100ms; */
   color: lightgray;
 
   ::after {
@@ -128,13 +143,25 @@ export const CanvasContainer = styled.div`
   height: 73%;
 `;
 
-export const CanvasElement = styled.canvas`
+const canvasStyles = css`
   width: 100%;
   height: 100%;
-  background-color: black;
   border-radius: 0.5em;
   box-sizing: border-box;
+`;
+
+export const CanvasElement = styled.canvas`
+  ${canvasStyles}
+  /* background-color: black; */
   border: 0.1em solid var(--timberwolf);
+`;
+
+export const CanvasOverlay = styled.canvas`
+  ${canvasStyles}
+  position: absolute;
+  top: 0;
+  left: 0;
+  /* background-color: red; */
 `;
 
 export const SettingsContainer = styled.div`
@@ -145,6 +172,7 @@ export const SettingsContainer = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  color: #090909;
 
   & > div {
     width: 48%;

@@ -1,75 +1,69 @@
-import { createRef, useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import {
   CanvasContainer,
   DetailCard,
-  Indicator,
   PageContainer,
+  SettingsContainer,
   SideBar,
 } from '@/styles/Canvas.styled';
 import Settings from './Settings';
 import Fps from './Fps';
 import AnimatedCanvas from './AnimatedCanvas';
-import { keyToName } from '@/utils/keyFunc';
+import CustomConsole from './CustomConsole';
+import GeneralSettings from './GeneralSettings';
 
 export interface AnimationSettings {
   size: number;
   // Add more settings here as needed
 }
 
+export interface GeneralSettingsType {
+  canvasOverlay: boolean;
+  canvasOverlayPosition: number;
+  overlayOpacity: number;
+  // Add more settings here as needed
+}
+
+const defaultSettings: AnimationSettings = {
+  size: 100,
+};
+
+const defaultGeneralSettings: GeneralSettingsType = {
+  canvasOverlay: true,
+  canvasOverlayPosition: 0,
+  overlayOpacity: 0.9,
+};
+
 export default function Canvas() {
-  const [settings, setSettings] = useState<AnimationSettings>({ size: 50 });
   const [frameRate, setFrameRate] = useState<number>(0);
-
-  // automatically set the ref keys based on the ConsoleRefs type
-  const consoleSpanRefs = useRef({
-    animationStartRef: createRef<HTMLSpanElement>(),
-    animationCleanRef: createRef<HTMLSpanElement>(),
-    resizeRef: createRef<HTMLSpanElement>(),
-    drawTickRef: createRef<HTMLSpanElement>(),
-  });
-
-  type ConsoleRefs = typeof consoleSpanRefs.current;
-
-  useEffect(() => {
-    const blink = (ref: React.RefObject<HTMLSpanElement>) => {
-      if (!ref.current) return;
-      ref.current.style.color = 'red';
-
-      setTimeout(() => {
-        if (!ref.current) return;
-        ref.current.style.color = 'lightgray';
-      }, 250);
-    };
-
-    const oldLog = console.log;
-    console.log = function (key?: keyof ConsoleRefs, ...args: any[]) {
-      if (key && key in consoleSpanRefs.current) {
-        blink(consoleSpanRefs.current[key] as React.RefObject<HTMLSpanElement>);
-      } else oldLog.apply(console, [key, ...args]);
-    };
-  }, []);
+  const [settings, setSettings] = useState<AnimationSettings>(defaultSettings);
+  const [generalSettings, setGeneralSettings] =
+    useState<GeneralSettingsType>(defaultGeneralSettings);
 
   return (
     <PageContainer>
       <SideBar>
         <DetailCard>
-          <h4>Console</h4>
-          {Object.keys(consoleSpanRefs.current).map((key) => {
-            return (
-              <span key={key}>
-                {keyToName(key)}
-                <Indicator ref={consoleSpanRefs.current[key as keyof ConsoleRefs]} />
-              </span>
-            );
-          })}
+          {/* Add needed console.logs inside */}
+          <CustomConsole />
         </DetailCard>
         <DetailCard />
       </SideBar>
       <div>
-        <Settings settings={settings} setSettings={setSettings} />
+        <SettingsContainer>
+          <Settings settings={settings} setSettings={setSettings} />
+          <GeneralSettings
+            generalSettings={generalSettings}
+            setGeneralSettings={setGeneralSettings}
+          />
+        </SettingsContainer>
         <CanvasContainer>
           <Fps frameRate={frameRate} />
-          <AnimatedCanvas settings={settings} setFrameRate={setFrameRate} />
+          <AnimatedCanvas
+            settings={settings}
+            setFrameRate={setFrameRate}
+            generalSettings={generalSettings}
+          />
         </CanvasContainer>
       </div>
       <SideBar>

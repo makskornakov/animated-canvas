@@ -21,3 +21,17 @@ export function tickDraw(ctx: CanvasRenderingContext2D, settings: AnimationSetti
   ctx.closePath();
   // }
 }
+
+export function overlayDraw(ctx: CanvasRenderingContext2D, settings: AnimationSettings) {
+  console.log('overlayDrawRef');
+
+  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+  const { size } = settings;
+
+  ctx.strokeStyle = 'white';
+  ctx.lineWidth = 4;
+  ctx.beginPath();
+  ctx.arc(ctx.canvas.width / 2, ctx.canvas.height / 2, size, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.closePath();
+}
