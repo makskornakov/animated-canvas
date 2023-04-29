@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 
 export const FpsSpan = styled.span<{ fps: number }>`
   position: absolute;
@@ -88,13 +88,41 @@ export const DetailCard = styled.div`
   background-color: var(--platinum);
   border-radius: 0.5em;
 
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5em;
+  color: #090909;
+  padding-top: 1em;
+
+  & > span {
+    font-size: 0.9rem;
+    width: 90%;
+    display: flex;
+    justify-content: space-between;
+  }
+
   @media (max-width: 1024px) {
     width: 48%;
     height: 100%;
   }
 `;
 
+export const Indicator = styled.span`
+  width: 30%;
+  text-align: center;
+  line-height: 1.2rem;
+  font-size: 1.2rem;
+  /* transition: color 100ms; */
+  color: lightgray;
+
+  ::after {
+    content: '•';
+  }
+`;
+
 export const CanvasContainer = styled.div`
+  user-select: none;
   position: relative;
   width: 100%;
   height: 73%;

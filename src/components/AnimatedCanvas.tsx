@@ -14,16 +14,17 @@ export default function AnimatedCanvas({
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   // ?Resize the canvas to fill browser window dynamically
-  const resize = () => {
+  const resize = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const bounds = canvas.getBoundingClientRect();
     const dpr = window.devicePixelRatio || 1;
 
-    console.log('resizing');
+    console.log('resizeRef');
+
     canvas.width = bounds.width * dpr;
     canvas.height = bounds.height * dpr;
-  };
+  }, []);
 
   useEffect(() => {
     resize();
@@ -31,7 +32,7 @@ export default function AnimatedCanvas({
     return () => {
       window.removeEventListener('resize', resize);
     };
-  }, []);
+  }, [resize]);
 
   // ? Tick function (called every frame)
   const tick = useCallback(
@@ -64,12 +65,12 @@ export default function AnimatedCanvas({
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    console.log('Animation start');
+    console.log('animationStartRef');
     animationRef.current = requestAnimationFrame(tick.bind(null, ctx, 0));
 
     return () => {
       if (animationRef.current) {
-        console.log('Animation cleanup');
+        console.log('animationCleanRef');
         cancelAnimationFrame(animationRef.current);
       }
     };

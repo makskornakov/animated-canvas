@@ -1,7 +1,7 @@
 import type { AnimationSettings } from '@/components/Canvas';
 
 export function tickDraw(ctx: CanvasRenderingContext2D, settings: AnimationSettings) {
-  console.log('drawing tick');
+  console.log('drawTickRef');
 
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
   const { size } = settings;
