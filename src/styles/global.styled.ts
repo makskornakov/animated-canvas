@@ -5,6 +5,14 @@ export const GlobalStyle = createGlobalStyle`
     font-weight: 200;
   }
 
+// root colors
+  :root {
+    --timberwolf: #CED0CE;
+    --eerieBlack: #191919;
+    --platinum: #E6E8E6;
+    --coquelicot: #F15025;
+  }
+
   body {
     margin: 0;
     padding: 0;

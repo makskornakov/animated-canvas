@@ -1,24 +1,28 @@
-import type { Settings } from './Canvas';
-import { SettingsContainer } from './Canvas.styled';
+import type { AnimationSettings } from './Canvas';
+import { SettingsContainer } from '@/styles/Canvas.styled';
 export default function Settings({
   settings,
   setSettings,
   ...props
 }: {
-  settings: Settings;
-  setSettings: React.Dispatch<React.SetStateAction<Settings>>;
+  settings: AnimationSettings;
+  setSettings: React.Dispatch<React.SetStateAction<AnimationSettings>>;
 }) {
   return (
     <SettingsContainer {...props}>
-      <input
-        type="range"
-        min="10"
-        max="300"
-        value={settings.size}
-        onChange={(e) => setSettings({ ...settings, size: Number(e.target.value) })}
-      />{' '}
-      <span>{settings.size}</span>
-      <br></br>
+      <div>
+        <input
+          type="range"
+          min="10"
+          max="300"
+          value={settings.size}
+          onChange={(e) => setSettings({ ...settings, size: Number(e.target.value) })}
+        />{' '}
+        <span>{settings.size}</span>
+        <br></br>
+      </div>
+
+      <div></div>
     </SettingsContainer>
   );
 }

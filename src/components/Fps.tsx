@@ -1,4 +1,4 @@
-import { FpsSpan } from './Canvas.styled';
+import { FpsSpan } from '../styles/Canvas.styled';
 
 export default function Fps({ frameRate }: { frameRate: number }) {
   return (

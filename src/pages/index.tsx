@@ -6,14 +6,13 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Noise Generation</title>
-        <meta name="description" content="Noise Generation" />
+        <title>Canvas Playground</title>
+        <meta name="description" content="Canvas Playground" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         {/* <link rel="icon" href="/favicon.ico" /> */}
       </Head>
       <main>
-        <h1>Noise Generation</h1>
-
+        <h1>Canvas Playground</h1>
         <Canvas />
       </main>
     </>
