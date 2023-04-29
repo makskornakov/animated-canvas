@@ -1,5 +1,5 @@
 # Next.js Canvas Playground
-## Exploring animations!
+#### Exploring animations!
 
 ## Current Functionality
 
