@@ -10,29 +10,25 @@ import Settings from './Settings';
 import Fps from './Fps';
 import AnimatedCanvas from './AnimatedCanvas';
 import CustomConsole from './CustomConsole';
-
-interface Setting {
-  value: boolean | number | string;
-  min?: number;
-  max?: number;
-  step?: number;
-}
-
 export interface Settings {
-  [key: string]: Setting;
+  [key: string]: {
+    value: boolean | number | string;
+    min?: number;
+    max?: number;
+    step?: number;
+  };
 }
 
-interface AnimationSettings {
+export interface SettingList {
   [key: string]: Settings;
 }
 
-export const animationSettings: AnimationSettings = {
+export const animationSettingsSetter: SettingList = {
   ball: {
     size: {
-      value: 50,
-      min: 1,
+      value: 100,
+      min: 10,
       max: 300,
-      step: 0.1,
     },
     randomSize: {
       value: false,
@@ -44,27 +40,42 @@ export const animationSettings: AnimationSettings = {
       value: false,
     },
   },
+  square: {
+    size: {
+      value: 100,
+      min: 10,
+      max: 300,
+    },
+    randomSize: {
+      value: false,
+    },
+  },
 };
 
-const defaultGeneralSettings: Settings = {
-  canvasOverlay: {
-    value: false,
-  },
-  canvasOverlayBehind: {
-    value: false,
-  },
-  overlayOpacity: {
-    value: 0.5,
-    min: 0,
-    max: 1,
-    step: 0.01,
+const otherSettingsSetter: SettingList = {
+  general: {
+    canvasOverlay: {
+      value: false,
+    },
+    canvasOverlayBehind: {
+      value: false,
+    },
+    overlayOpacity: {
+      value: 0.5,
+      max: 1,
+      step: 0.01,
+    },
   },
 };
+
+export type AnimationName = keyof typeof animationSettingsSetter;
 
 export default function Canvas() {
   const [frameRate, setFrameRate] = useState<number>(0);
-  const [settings, setSettings] = useState<Settings>(animationSettings.ball);
-  const [generalSettings, setGeneralSettings] = useState<Settings>(defaultGeneralSettings);
+  const [animationName, setAnimationName] = useState<AnimationName>('ball');
+
+  const [animationSettings, setAnimationSettings] = useState<SettingList>(animationSettingsSetter);
+  const [otherSettings, setOtherSettings] = useState<SettingList>(otherSettingsSetter);
 
   return (
     <PageContainer>
@@ -76,20 +87,41 @@ export default function Canvas() {
       </SideBar>
       <div>
         <SettingsContainer>
-          <Settings settings={settings} setSettings={setSettings} />
-          <Settings settings={generalSettings} setSettings={setGeneralSettings} />
+          <Settings
+            animationName={animationName}
+            settings={animationSettings[animationName]}
+            setSettings={setAnimationSettings}
+          />
+          <Settings
+            animationName="general"
+            settings={otherSettings.general}
+            setSettings={setOtherSettings}
+          />
         </SettingsContainer>
         <CanvasContainer>
           <Fps frameRate={frameRate} />
           <AnimatedCanvas
-            settings={settings}
+            animationName={animationName}
+            allAnimationSettings={animationSettings}
             setFrameRate={setFrameRate}
-            generalSettings={generalSettings}
+            generalSettings={otherSettings.general}
           />
         </CanvasContainer>
       </div>
       <SideBar>
-        <DetailCard />
+        <DetailCard>
+          <label htmlFor="animationName">Animation Name</label>
+          <select
+            onChange={(e) => setAnimationName(e.target.value as AnimationName)}
+            id="animationName"
+          >
+            {Object.keys(animationSettingsSetter).map((key) => (
+              <option key={key} value={key}>
+                {key}
+              </option>
+            ))}
+          </select>
+        </DetailCard>
         <DetailCard />
       </SideBar>
     </PageContainer>

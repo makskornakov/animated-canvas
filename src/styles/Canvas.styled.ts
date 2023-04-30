@@ -91,6 +91,11 @@ export const DetailCard = styled.div`
   color: #090909;
   padding-top: 0.5em;
 
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5em;
+
   @media (max-width: 1024px) {
     width: 48%;
     height: 100%;
@@ -179,5 +184,23 @@ export const SettingsContainer = styled.div`
     height: 100%;
     background-color: var(--platinum);
     border-radius: 0.5em;
+
+    padding: 0.5em;
+    box-sizing: border-box;
+
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+    align-items: flex-start;
+    flex-wrap: wrap;
+
+    & > span {
+      /* outline: 1px solid red; */
+
+      display: flex;
+      align-items: center;
+      gap: 1em;
+      flex-wrap: wrap;
+    }
   }
 `;

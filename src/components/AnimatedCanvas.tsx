@@ -1,16 +1,39 @@
-import { useRef, useEffect, useCallback, useState } from 'react';
+import { useRef, useEffect, useCallback, useState, useMemo } from 'react';
 import { CanvasElement, CanvasOverlay } from '@/styles/Canvas.styled';
-import { overlayDraw, tickDraw } from '@/utils/engine';
-// import { SmartSetting, Setting } from './Canvas';
-// import { SmartSettings } from './Canvas';
-import { Settings } from './Canvas';
+import {
+  overlayCircleDraw,
+  overlaySquareDraw,
+  tickCircleDraw,
+  tickSquareDraw,
+} from '@/utils/engine';
+import { AnimationName, SettingList, Settings } from './Canvas';
+
+type Animations = {
+  [key in AnimationName]: {
+    tick: (ctx: CanvasRenderingContext2D, settings: Settings) => void;
+    overlay: (ctx: CanvasRenderingContext2D, settings: Settings) => void;
+  };
+};
+
+const animations: Animations = {
+  ball: {
+    tick: tickCircleDraw,
+    overlay: overlayCircleDraw,
+  },
+  square: {
+    tick: tickSquareDraw,
+    overlay: overlaySquareDraw,
+  },
+};
 
 export default function AnimatedCanvas({
-  settings,
+  animationName,
+  allAnimationSettings,
   generalSettings,
   setFrameRate,
 }: {
-  settings: Settings;
+  animationName: AnimationName;
+  allAnimationSettings: SettingList;
   generalSettings: Settings;
   setFrameRate: React.Dispatch<React.SetStateAction<number>>;
 }) {
@@ -25,7 +48,6 @@ export default function AnimatedCanvas({
   // ?Resize the canvas to fill browser window dynamically
   const resize = useCallback(() => {
     const canvas = canvasRef.current;
-    // const overlay = overlayCanvas.current;
     if (!canvas) return;
     const bounds = canvas.getBoundingClientRect();
     const dpr = window.devicePixelRatio || 1;
@@ -50,7 +72,9 @@ export default function AnimatedCanvas({
   const tick = useCallback(
     (ctx: CanvasRenderingContext2D, frames: number, timeStamp?: number) => {
       // Draw the frame
-      tickDraw(ctx, settings);
+      console.log('drawTickRef');
+      // tickDraw(ctx, settings);
+      animations[animationName].tick(ctx, allAnimationSettings[animationName]);
 
       // Update frame rate
       frames++;
@@ -66,7 +90,7 @@ export default function AnimatedCanvas({
         tick.bind(null, ctx, frames, timeStamp || lastTimeStamp),
       );
     },
-    [setFrameRate, settings],
+    [animationName, setFrameRate, allAnimationSettings],
   );
 
   const overlayFunc = useCallback(() => {
@@ -75,8 +99,10 @@ export default function AnimatedCanvas({
     const ctx = overlay.getContext('2d');
     if (!ctx) return;
 
-    overlayDraw(ctx, settings);
-  }, [generalSettings.canvasOverlay.value, settings]);
+    console.log('overlayDrawRef');
+    // overlayDraw(ctx, settings);
+    animations[animationName].overlay(ctx, allAnimationSettings[animationName]);
+  }, [animationName, generalSettings.canvasOverlay.value, allAnimationSettings]);
 
   useEffect(() => {
     overlayFunc();
