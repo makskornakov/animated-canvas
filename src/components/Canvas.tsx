@@ -10,55 +10,43 @@ import Settings from './Settings';
 import Fps from './Fps';
 import AnimatedCanvas from './AnimatedCanvas';
 import CustomConsole from './CustomConsole';
-import GeneralSettings from './GeneralSettings';
 
-// type Setting = {
-//   value: boolean | number;
-//   // (typeof value extends boolean ? 'min' : never)?: number;
-//   min?: number;
-//   max?: number;
-// };
+interface Setting {
+  value: boolean | number | string;
+  min?: number;
+  max?: number;
+  step?: number;
+}
 
-// export type SettingsObject = {
-//   [key: string]: Setting;
-// };
+export interface Settings {
+  [key: string]: Setting;
+}
 
-// interface Setting {
-//   type: 'boolean' | 'number';
-//   value: boolean | number;
-//   min?: number;
-//   max?: number;
-// }
+interface AnimationSettings {
+  [key: string]: Settings;
+}
 
-// export interface BaseSettings {
-//   [key: string]: Setting;
-// }
-
-const defaultAnimationSettings = {
-  size: {
-    value: 50,
-    min: 1,
-    max: 300,
-  },
-
-  randomSize: {
-    value: false,
-  },
-
-  randomX: {
-    value: false,
-  },
-
-  randomY: {
-    value: false,
+export const animationSettings: AnimationSettings = {
+  ball: {
+    size: {
+      value: 50,
+      min: 1,
+      max: 300,
+      step: 0.1,
+    },
+    randomSize: {
+      value: false,
+    },
+    randomX: {
+      value: false,
+    },
+    randomY: {
+      value: false,
+    },
   },
 };
 
-// type SmartSettings<T extends Setting> = T['type'] extends 'number'
-//   ? T & { min: number; max: number }
-//   : T;
-
-const defaultGeneralSettings = {
+const defaultGeneralSettings: Settings = {
   canvasOverlay: {
     value: false,
   },
@@ -73,21 +61,15 @@ const defaultGeneralSettings = {
   },
 };
 
-export type AnimationSettings = typeof defaultAnimationSettings;
-
-export type GeneralSettingsType = typeof defaultGeneralSettings;
-
 export default function Canvas() {
   const [frameRate, setFrameRate] = useState<number>(0);
-  const [settings, setSettings] = useState<AnimationSettings>(defaultAnimationSettings);
-  const [generalSettings, setGeneralSettings] =
-    useState<GeneralSettingsType>(defaultGeneralSettings);
+  const [settings, setSettings] = useState<Settings>(animationSettings.ball);
+  const [generalSettings, setGeneralSettings] = useState<Settings>(defaultGeneralSettings);
 
   return (
     <PageContainer>
       <SideBar>
         <DetailCard>
-          {/* Add needed console.logs inside */}
           <CustomConsole />
         </DetailCard>
         <DetailCard />
@@ -95,11 +77,7 @@ export default function Canvas() {
       <div>
         <SettingsContainer>
           <Settings settings={settings} setSettings={setSettings} />
-          {/* <Settings settings={generalSettings} setSettings={setGeneralSettings} /> */}
-          <GeneralSettings
-            generalSettings={generalSettings}
-            setGeneralSettings={setGeneralSettings}
-          />
+          <Settings settings={generalSettings} setSettings={setGeneralSettings} />
         </SettingsContainer>
         <CanvasContainer>
           <Fps frameRate={frameRate} />

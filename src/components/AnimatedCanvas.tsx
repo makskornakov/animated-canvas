@@ -3,15 +3,15 @@ import { CanvasElement, CanvasOverlay } from '@/styles/Canvas.styled';
 import { overlayDraw, tickDraw } from '@/utils/engine';
 // import { SmartSetting, Setting } from './Canvas';
 // import { SmartSettings } from './Canvas';
-import { AnimationSettings, GeneralSettingsType } from './Canvas';
+import { Settings } from './Canvas';
 
 export default function AnimatedCanvas({
   settings,
   generalSettings,
   setFrameRate,
 }: {
-  settings: AnimationSettings;
-  generalSettings: GeneralSettingsType;
+  settings: Settings;
+  generalSettings: Settings;
   setFrameRate: React.Dispatch<React.SetStateAction<number>>;
 }) {
   const animationRef = useRef<number>();
@@ -103,6 +103,10 @@ export default function AnimatedCanvas({
     };
   }, [tick]);
 
+  const behind = generalSettings.canvasOverlayBehind.value as boolean;
+  const shown = generalSettings.canvasOverlay.value as boolean;
+  const opacity = generalSettings.overlayOpacity.value as number;
+
   return (
     <>
       <CanvasElement ref={canvasRef} width={canvasSize.width} height={canvasSize.height} />
@@ -110,9 +114,9 @@ export default function AnimatedCanvas({
         width={canvasSize.width}
         height={canvasSize.height}
         style={{
-          zIndex: generalSettings.canvasOverlayBehind.value ? -1 : 0,
-          display: generalSettings.canvasOverlay.value ? 'block' : 'none',
-          opacity: generalSettings.overlayOpacity.value,
+          zIndex: behind ? -1 : 1,
+          display: shown ? 'block' : 'none',
+          opacity,
         }}
         ref={overlayCanvas}
       />

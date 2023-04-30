@@ -1,38 +1,47 @@
-// import { BaseSettings } from './Canvas';
-
-import type { AnimationSettings } from './Canvas';
+import type { Settings } from './Canvas';
 export default function Settings({
   settings,
   setSettings,
 }: {
-  settings: AnimationSettings;
-  setSettings: React.Dispatch<React.SetStateAction<AnimationSettings>>;
+  settings: Settings;
+  setSettings: React.Dispatch<React.SetStateAction<Settings>>;
 }) {
   return (
     <div>
-      {Object.entries(settings).map(([key, value]) => {
+      {Object.entries(settings).map(([key, setting]) => {
         return (
           <>
             <span key={key}>
               {key.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase())}{' '}
               <input
-                {...(typeof value.value === 'boolean'
-                  ? { checked: value.value }
+                {...(typeof setting.value === 'boolean'
+                  ? { checked: setting.value }
                   : {
-                      value: value.value,
-                      min: value.min,
-                      max: value.max,
+                      value: setting.value,
                     })}
-                type={typeof value.value === 'boolean' ? 'checkbox' : 'range'}
+                {...(typeof setting.value === 'number' && {
+                  min: setting.min,
+                  max: setting.max,
+                  step: setting.step,
+                })}
+                type={
+                  typeof setting.value === 'boolean'
+                    ? 'checkbox'
+                    : typeof setting.value === 'number'
+                    ? 'range'
+                    : 'text'
+                }
                 onChange={(e) =>
                   setSettings((prev) => ({
                     ...prev,
                     [key]: {
-                      ...prev[key as keyof AnimationSettings],
+                      ...prev[key as keyof Settings],
                       value:
-                        typeof prev[key as keyof AnimationSettings].value === 'boolean'
+                        typeof prev[key as keyof Settings].value === 'boolean'
                           ? e.target.checked
-                          : e.target.valueAsNumber,
+                          : typeof prev[key as keyof Settings].value === 'number'
+                          ? e.target.valueAsNumber
+                          : e.target.value,
                     },
                   }))
                 }
