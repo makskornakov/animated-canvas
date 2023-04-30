@@ -190,7 +190,7 @@ export const SettingsContainer = styled.div`
 
     display: flex;
     flex-direction: column;
-    gap: 0.5em;
+    gap: 0.3em;
     align-items: flex-start;
     flex-wrap: wrap;
 
@@ -199,6 +199,7 @@ export const SettingsContainer = styled.div`
 
       display: flex;
       align-items: center;
+
       gap: 1em;
       flex-wrap: wrap;
     }

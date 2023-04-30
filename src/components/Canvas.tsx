@@ -49,6 +49,11 @@ export const animationSettingsSetter: SettingList = {
     randomSize: {
       value: false,
     },
+    randomForce: {
+      value: 0.2,
+      max: 2,
+      step: 0.01,
+    },
   },
 };
 
@@ -81,7 +86,17 @@ export default function Canvas() {
     <PageContainer>
       <SideBar>
         <DetailCard>
-          <CustomConsole />
+          <label htmlFor="animationName">Animation Name</label>
+          <select
+            onChange={(e) => setAnimationName(e.target.value as AnimationName)}
+            id="animationName"
+          >
+            {Object.keys(animationSettingsSetter).map((key) => (
+              <option key={key} value={key}>
+                {key}
+              </option>
+            ))}
+          </select>
         </DetailCard>
         <DetailCard />
       </SideBar>
@@ -110,18 +125,9 @@ export default function Canvas() {
       </div>
       <SideBar>
         <DetailCard>
-          <label htmlFor="animationName">Animation Name</label>
-          <select
-            onChange={(e) => setAnimationName(e.target.value as AnimationName)}
-            id="animationName"
-          >
-            {Object.keys(animationSettingsSetter).map((key) => (
-              <option key={key} value={key}>
-                {key}
-              </option>
-            ))}
-          </select>
+          <CustomConsole />
         </DetailCard>
+
         <DetailCard />
       </SideBar>
     </PageContainer>
