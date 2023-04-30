@@ -8,45 +8,39 @@ export default function GeneralSettings({
 }) {
   return (
     <div>
-      <span>
-        Overlay{' '}
-        <input
-          type="checkbox"
-          checked={generalSettings.canvasOverlay}
-          onChange={(e) =>
-            setGeneralSettings((prev) => ({ ...prev, canvasOverlay: e.target.checked }))
-          }
-        />
-      </span>
-      <br></br>
-      <span>
-        Overlay Behind{' '}
-        <input
-          type="checkbox"
-          checked={generalSettings.canvasOverlayPosition === -1}
-          onChange={(e) =>
-            setGeneralSettings((prev) => ({
-              ...prev,
-              canvasOverlayPosition: e.target.checked ? -1 : 0,
-            }))
-          }
-        />
-      </span>
-      <br></br>
-      <span> Overlay Opacity </span>
-      <input
-        type="range"
-        min="0"
-        max="1"
-        step="0.01"
-        value={generalSettings.overlayOpacity}
-        onChange={(e) =>
-          setGeneralSettings((prev) => ({
-            ...prev,
-            overlayOpacity: Number(e.target.value),
-          }))
-        }
-      />
+      {Object.entries(generalSettings).map(([key, value]) => {
+        return (
+          <>
+            <span key={key}>
+              {key.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase())}{' '}
+              <input
+                {...(typeof value.value === 'boolean'
+                  ? { checked: value.value }
+                  : {
+                      value: value.value,
+                      min: value.min,
+                      max: value.max,
+                      step: value.step,
+                    })}
+                type={typeof value.value === 'boolean' ? 'checkbox' : 'range'}
+                onChange={(e) =>
+                  setGeneralSettings((prev) => ({
+                    ...prev,
+                    [key]: {
+                      ...prev[key as keyof GeneralSettingsType],
+                      value:
+                        typeof prev[key as keyof GeneralSettingsType].value === 'boolean'
+                          ? e.target.checked
+                          : e.target.valueAsNumber,
+                    },
+                  }))
+                }
+              />
+            </span>
+            <br></br>
+          </>
+        );
+      })}
     </div>
   );
 }

@@ -1,6 +1,8 @@
-import { useRef, useEffect, useCallback } from 'react';
+import { useRef, useEffect, useCallback, useState } from 'react';
 import { CanvasElement, CanvasOverlay } from '@/styles/Canvas.styled';
 import { overlayDraw, tickDraw } from '@/utils/engine';
+// import { SmartSetting, Setting } from './Canvas';
+// import { SmartSettings } from './Canvas';
 import { AnimationSettings, GeneralSettingsType } from './Canvas';
 
 export default function AnimatedCanvas({
@@ -15,24 +17,25 @@ export default function AnimatedCanvas({
   const animationRef = useRef<number>();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const overlayCanvas = useRef<HTMLCanvasElement>(null);
+  const [canvasSize, setCanvasSize] = useState<{ width: number; height: number }>({
+    width: 0,
+    height: 0,
+  });
 
   // ?Resize the canvas to fill browser window dynamically
   const resize = useCallback(() => {
     const canvas = canvasRef.current;
-    const overlay = overlayCanvas.current;
+    // const overlay = overlayCanvas.current;
     if (!canvas) return;
     const bounds = canvas.getBoundingClientRect();
     const dpr = window.devicePixelRatio || 1;
 
     console.log('resizeRef');
 
-    canvas.width = bounds.width * dpr;
-    canvas.height = bounds.height * dpr;
-
-    if (overlay) {
-      overlay.width = bounds.width * dpr;
-      overlay.height = bounds.height * dpr;
-    }
+    setCanvasSize({
+      width: bounds.width * dpr,
+      height: bounds.height * dpr,
+    });
   }, []);
 
   useEffect(() => {
@@ -66,6 +69,22 @@ export default function AnimatedCanvas({
     [setFrameRate, settings],
   );
 
+  const overlayFunc = useCallback(() => {
+    const overlay = overlayCanvas.current;
+    if (!overlay || !generalSettings.canvasOverlay.value) return;
+    const ctx = overlay.getContext('2d');
+    if (!ctx) return;
+
+    overlayDraw(ctx, settings);
+  }, [generalSettings.canvasOverlay.value, settings]);
+
+  useEffect(() => {
+    overlayFunc();
+  }, [
+    overlayFunc,
+    canvasSize, // ? For the first render and resize rerender
+  ]);
+
   // ? Start animation
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -76,7 +95,6 @@ export default function AnimatedCanvas({
 
     console.log('animationStartRef');
     animationRef.current = requestAnimationFrame(tick.bind(null, ctx, 0));
-
     return () => {
       if (animationRef.current) {
         console.log('animationCleanRef');
@@ -85,30 +103,16 @@ export default function AnimatedCanvas({
     };
   }, [tick]);
 
-  const overlayFunc = useCallback(
-    (ctx: CanvasRenderingContext2D) => {
-      overlayDraw(ctx, settings);
-    },
-    [settings],
-  );
-
-  // ? Handle overlay
-  useEffect(() => {
-    const overlay = overlayCanvas.current;
-    if (!overlay || !generalSettings.canvasOverlay) return;
-    const ctx = overlay.getContext('2d');
-    if (!ctx) return;
-    overlayFunc(ctx);
-  }, [generalSettings.canvasOverlay, overlayFunc]);
-
   return (
     <>
-      <CanvasElement ref={canvasRef} />
+      <CanvasElement ref={canvasRef} width={canvasSize.width} height={canvasSize.height} />
       <CanvasOverlay
+        width={canvasSize.width}
+        height={canvasSize.height}
         style={{
-          zIndex: generalSettings.canvasOverlayPosition,
-          display: generalSettings.canvasOverlay ? 'block' : 'none',
-          opacity: generalSettings.overlayOpacity,
+          zIndex: generalSettings.canvasOverlayBehind.value ? -1 : 0,
+          display: generalSettings.canvasOverlay.value ? 'block' : 'none',
+          opacity: generalSettings.overlayOpacity.value,
         }}
         ref={overlayCanvas}
       />

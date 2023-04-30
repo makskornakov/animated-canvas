@@ -9,6 +9,7 @@ export default function CustomConsole() {
     animationCleanRef: createRef<HTMLSpanElement>(),
     resizeRef: createRef<HTMLSpanElement>(),
     drawTickRef: createRef<HTMLSpanElement>(),
+    overlayDrawRef: createRef<HTMLSpanElement>(),
     // Add more refs here as needed
   });
 
