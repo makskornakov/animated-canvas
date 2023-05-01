@@ -96,6 +96,10 @@ export const DetailCard = styled.div`
   align-items: center;
   gap: 0.5em;
 
+  & span {
+    font-size: 0.9rem;
+  }
+
   @media (max-width: 1024px) {
     width: 48%;
     height: 100%;
@@ -113,7 +117,6 @@ export const ConsoleContainer = styled.div`
   & > span {
     /* outline: 1px solid red; */
 
-    font-size: 0.9rem;
     width: 90%;
     display: flex;
     align-items: center;
@@ -181,6 +184,8 @@ export const SettingsContainer = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  gap: 1em;
+
   color: #090909;
 
   & > div {
@@ -192,20 +197,19 @@ export const SettingsContainer = styled.div`
     padding: 0.5em;
     box-sizing: border-box;
 
-    display: flex;
-    flex-direction: column;
-    gap: 0.3em;
-    align-items: flex-start;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5em;
 
     & > span {
       /* outline: 1px solid red; */
 
+      font-size: 0.9rem;
       display: flex;
       align-items: center;
 
-      gap: 1em;
-      flex-wrap: wrap;
+      gap: 0.5em;
+      /* flex-wrap: wrap; */
     }
   }
 `;
