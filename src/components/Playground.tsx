@@ -10,7 +10,8 @@ import DynamicSettings from './DynamicSettings';
 import Fps from './Fps';
 import AnimatedCanvas from './AnimatedCanvas';
 import CustomConsole from './CustomConsole';
-import { SettingList, animationSettingsSetter, otherSettingsSetter } from '../utils/settings';
+import { animationSettingsSetter, otherSettingsSetter } from '../utils/settings';
+import type { SettingList } from '../utils/settings';
 import type { AnimationName } from '../utils/animations';
 
 export default function Playground() {
@@ -65,7 +66,6 @@ export default function Playground() {
         <DetailCard>
           <CustomConsole />
         </DetailCard>
-
         <DetailCard />
       </SideBar>
     </PageContainer>
