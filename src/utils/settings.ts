@@ -36,6 +36,12 @@ export const animationSettingsSetter: SettingList = {
     randomY: {
       value: false,
     },
+    test: {
+      value: 'test',
+    },
+    test2: {
+      value: 'test2',
+    },
   },
   square: {
     size: {

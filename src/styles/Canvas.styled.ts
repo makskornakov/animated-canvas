@@ -26,8 +26,8 @@ export const PageContainer = styled.div`
 
   margin-top: 1em;
   width: 92vw;
+  min-height: 500px;
   height: 80vh;
-  min-height: 400px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -46,7 +46,6 @@ export const PageContainer = styled.div`
   }
 
   & > div:nth-child(2) {
-    gap: 1.5em;
     width: 65%;
   }
 
@@ -57,6 +56,7 @@ export const PageContainer = styled.div`
     margin-bottom: 1em;
 
     & > div:nth-child(2) {
+      gap: 1.5em;
       width: 100%;
     }
 
@@ -84,7 +84,7 @@ export const SideBar = styled.div`
     flex-direction: row !important;
     gap: 0;
     width: 100%;
-    height: 200px !important;
+    height: 170px !important;
   }
 `;
 
@@ -162,7 +162,7 @@ export const CanvasContainer = styled.div`
   user-select: none;
   position: relative;
   width: 100%;
-  height: 73%;
+  height: 70%;
 `;
 
 const canvasStyles = css`
@@ -170,6 +170,10 @@ const canvasStyles = css`
   height: 100%;
   border-radius: 0.5em;
   box-sizing: border-box;
+
+  @media (max-width: 1024px) {
+    min-height: calc(100vw / 2);
+  }
 `;
 
 export const CanvasElement = styled.canvas`
@@ -192,7 +196,6 @@ export const SettingsContainer = styled.div`
   /* outline: 1px solid #f15025; */
 
   width: 100%;
-  min-height: 120px;
   height: 25%;
   display: flex;
   flex-direction: row;
@@ -203,6 +206,7 @@ export const SettingsContainer = styled.div`
 
   & > div {
     width: 48%;
+    min-height: 120px;
 
     background-color: var(--platinum);
     border-radius: 0.5em;
@@ -235,6 +239,7 @@ export const SettingsContainer = styled.div`
 
     & > div {
       width: 100%;
+      max-height: 120px;
     }
   }
 `;
