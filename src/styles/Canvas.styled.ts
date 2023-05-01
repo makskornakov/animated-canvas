@@ -26,23 +26,28 @@ export const PageContainer = styled.div`
 
   margin-top: 1em;
   width: 92vw;
-  height: 85vh;
+  height: 80vh;
   min-height: 400px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  gap: 1em;
+  box-sizing: border-box;
 
   & > div {
+    /* outline: 1px solid blue; */
+
+    height: 100%;
     flex-direction: column;
     align-items: center;
-    justify-content: space-evenly;
+    justify-content: space-between;
     display: flex;
   }
 
   & > div:nth-child(2) {
+    gap: 1.5em;
     width: 65%;
-    height: 100%;
   }
 
   @media (max-width: 1024px) {
@@ -53,7 +58,6 @@ export const PageContainer = styled.div`
 
     & > div:nth-child(2) {
       width: 100%;
-      height: 90vh;
     }
 
     & > div:first-child {
@@ -68,20 +72,19 @@ export const PageContainer = styled.div`
 `;
 
 export const SideBar = styled.div`
-  /* outline: 1px solid blue; */
+  /* outline: 1px solid lime; */
 
   align-items: flex-start;
   justify-content: space-between !important;
   gap: 2em;
 
   width: 15%;
-  height: 92%;
 
   @media (max-width: 1024px) {
     flex-direction: row !important;
     gap: 0;
     width: 100%;
-    height: 20vh;
+    height: 200px !important;
   }
 `;
 
@@ -89,11 +92,14 @@ export const DetailCard = styled.div`
   width: 100%;
   height: 48%;
 
+  box-sizing: border-box;
+  overflow-y: scroll;
+
   background-color: var(--platinum);
   border-radius: 0.5em;
 
   color: #090909;
-  padding-top: 0.5em;
+  padding: 0.5em 0;
 
   display: flex;
   flex-direction: column;
@@ -167,24 +173,27 @@ const canvasStyles = css`
 `;
 
 export const CanvasElement = styled.canvas`
-  ${canvasStyles}
   /* background-color: black; */
+
+  ${canvasStyles}
   border: 0.1em solid var(--timberwolf);
 `;
 
 export const CanvasOverlay = styled.canvas`
+  /* background-color: red; */
+
   ${canvasStyles}
   position: absolute;
   top: 0;
   left: 0;
-  /* background-color: red; */
 `;
 
 export const SettingsContainer = styled.div`
   /* outline: 1px solid #f15025; */
 
   width: 100%;
-  height: 15%;
+  min-height: 120px;
+  height: 25%;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -194,26 +203,38 @@ export const SettingsContainer = styled.div`
 
   & > div {
     width: 48%;
-    height: 100%;
+
     background-color: var(--platinum);
     border-radius: 0.5em;
 
     padding: 0.5em;
     box-sizing: border-box;
 
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+
     gap: 0.5em;
 
+    overflow-y: scroll;
     & > span {
       /* outline: 1px solid red; */
 
       font-size: 0.9rem;
       display: flex;
       align-items: center;
+      max-width: 100%;
 
       gap: 0.5em;
-      /* flex-wrap: wrap; */
+      flex-wrap: wrap;
+    }
+  }
+
+  @media (max-width: 600px) {
+    flex-direction: column;
+
+    & > div {
+      width: 100%;
     }
   }
 `;
