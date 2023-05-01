@@ -1,4 +1,4 @@
-import { useRef, useEffect, useCallback, useState, useMemo } from 'react';
+import { useRef, useEffect, useCallback, useState, useMemo, useReducer } from 'react';
 import { CanvasElement, CanvasOverlay } from '@/styles/Canvas.styled';
 import {
   overlayCircleDraw,
@@ -26,14 +26,26 @@ const animations: Animations = {
   },
 };
 
+type Action = { type: AnimationName; setting: Partial<Settings> };
+
+function settingsReducer(state: SettingList, action: Action): SettingList {
+  return {
+    ...state,
+    [action.type]: {
+      ...state[action.type],
+      ...(action.setting as Settings),
+    },
+  };
+}
+
 export default function AnimatedCanvas({
   animationName,
-  allAnimationSettings,
+  initialAllAnimationSettings,
   generalSettings,
   setFrameRate,
 }: {
   animationName: AnimationName;
-  allAnimationSettings: SettingList;
+  initialAllAnimationSettings: SettingList;
   generalSettings: Settings;
   setFrameRate: React.Dispatch<React.SetStateAction<number>>;
 }) {
@@ -44,6 +56,10 @@ export default function AnimatedCanvas({
     width: 0,
     height: 0,
   });
+  const [allAnimationSettings] = useReducer(settingsReducer, initialAllAnimationSettings);
+  // const settings = useMemo(() => {
+  //   return allAnimationSettings[animationName];
+  // }, [allAnimationSettings, animationName]);
 
   // ?Resize the canvas to fill browser window dynamically
   const resize = useCallback(() => {
@@ -101,8 +117,8 @@ export default function AnimatedCanvas({
 
     console.log('overlayDrawRef');
     // overlayDraw(ctx, settings);
-    animations[animationName].overlay(ctx, allAnimationSettings[animationName]);
-  }, [animationName, generalSettings.canvasOverlay.value, allAnimationSettings]);
+    animations[animationName].overlay(ctx, initialAllAnimationSettings[animationName]);
+  }, [animationName, generalSettings.canvasOverlay.value, initialAllAnimationSettings]);
 
   useEffect(() => {
     overlayFunc();

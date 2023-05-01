@@ -117,7 +117,7 @@ export default function Canvas() {
           <Fps frameRate={frameRate} />
           <AnimatedCanvas
             animationName={animationName}
-            allAnimationSettings={animationSettings}
+            initialAllAnimationSettings={animationSettings}
             setFrameRate={setFrameRate}
             generalSettings={otherSettings.general}
           />
