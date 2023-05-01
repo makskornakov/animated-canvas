@@ -1,4 +1,4 @@
-import Canvas from '@/components/Canvas';
+import Playground from '@/components/Playground';
 import Head from 'next/head';
 
 export default function Home() {
@@ -12,7 +12,7 @@ export default function Home() {
       </Head>
       <main>
         <h1>Canvas Playground</h1>
-        <Canvas />
+        <Playground />
       </main>
     </>
   );

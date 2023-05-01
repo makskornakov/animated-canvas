@@ -1,5 +1,5 @@
-import type { Settings } from './Canvas';
-export default function Settings({
+import type { Settings } from '@/utils/settings';
+export default function DynamicSettings({
   categoryName,
   settings,
   setSettings,

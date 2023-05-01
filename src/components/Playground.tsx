@@ -6,25 +6,14 @@ import {
   SettingsContainer,
   SideBar,
 } from '@/styles/Canvas.styled';
-import Settings from './Settings';
+import DynamicSettings from './DynamicSettings';
 import Fps from './Fps';
-import AnimatedCanvas, { AnimationName } from './AnimatedCanvas';
+import AnimatedCanvas from './AnimatedCanvas';
 import CustomConsole from './CustomConsole';
-import { animationSettingsSetter, otherSettingsSetter } from './defaultSettings';
-export interface Settings {
-  [key: string]: {
-    value: boolean | number | string;
-    min?: number;
-    max?: number;
-    step?: number;
-  };
-}
+import { SettingList, animationSettingsSetter, otherSettingsSetter } from '../utils/settings';
+import type { AnimationName } from '../utils/animations';
 
-export interface SettingList {
-  [key: string]: Settings;
-}
-
-export default function Canvas() {
+export default function Playground() {
   const [frameRate, setFrameRate] = useState<number>(0);
   const [animationName, setAnimationName] = useState<AnimationName>('ball');
 
@@ -51,12 +40,12 @@ export default function Canvas() {
       </SideBar>
       <div>
         <SettingsContainer>
-          <Settings
+          <DynamicSettings
             categoryName={animationName}
             settings={animationSettings[animationName]}
             setSettings={setAnimationSettings}
           />
-          <Settings
+          <DynamicSettings
             categoryName="general"
             settings={otherSettings.general}
             setSettings={setOtherSettings}

@@ -1,33 +1,7 @@
 import { useRef, useEffect, useCallback, useState, useReducer } from 'react';
 import { CanvasElement, CanvasOverlay } from '@/styles/Canvas.styled';
-import {
-  overlayCircleDraw,
-  overlaySquareDraw,
-  tickCircleDraw,
-  tickSquareDraw,
-} from '@/utils/engine';
-import { SettingList, Settings } from './Canvas';
-
-type Animation = {
-  tick: (ctx: CanvasRenderingContext2D, settings: Settings) => void;
-  overlay: (ctx: CanvasRenderingContext2D, settings: Settings) => void;
-};
-
-// animations should be of type Animations but another unique type so it can be then referenced to get the type with object keys
-const ball: Animation = {
-  tick: tickCircleDraw,
-  overlay: overlayCircleDraw,
-};
-const square: Animation = {
-  tick: tickSquareDraw,
-  overlay: overlaySquareDraw,
-};
-const animations = {
-  ball,
-  square,
-};
-
-export type AnimationName = keyof typeof animations;
+import { animations } from '../utils/animations';
+import type { SettingList, Settings } from '@/utils/settings';
 
 type Action = { type: string; setting: Partial<Settings> };
 

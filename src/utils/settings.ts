@@ -1,4 +1,15 @@
-import { SettingList } from './Canvas';
+export interface Settings {
+  [key: string]: {
+    value: boolean | number | string;
+    min?: number;
+    max?: number;
+    step?: number;
+  };
+}
+
+export interface SettingList {
+  [key: string]: Settings;
+}
 
 export const consolesIWannaSee: string[] = [
   'animationStartRef',

@@ -1,7 +1,7 @@
-import { ConsoleContainer, Indicator } from '@/styles/Canvas.styled';
-import { keyToName } from '@/utils/keyFunc';
 import { useRef, createRef, useEffect } from 'react';
-import { consolesIWannaSee } from './defaultSettings';
+import { ConsoleContainer, Indicator } from '@/styles/Canvas.styled';
+import { keyToName } from '@/utils/helpers';
+import { consolesIWannaSee } from '@/utils/settings';
 
 export default function CustomConsole() {
   const consoleSpanRefs = useRef({

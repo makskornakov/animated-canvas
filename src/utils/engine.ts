@@ -1,4 +1,4 @@
-import type { Settings } from '@/components/Canvas';
+import type { Settings } from '@/utils/settings';
 
 export function tickCircleDraw(ctx: CanvasRenderingContext2D, settings: Settings) {
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
@@ -43,7 +43,7 @@ export function tickSquareDraw(ctx: CanvasRenderingContext2D, settings: Settings
   // ctx.fillStyle = `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 1)`;
   ctx.fillStyle = '#f15025';
   // for (let i = 0; i < 1; i++) {
-  const randS = (1 - randomForce / 2) + Math.random() * randomForce;
+  const randS = 1 - randomForce / 2 + Math.random() * randomForce;
   // const randS = 0.9 + Math.random() * 0.2;
   const updatedSize = randomSize ? size * randS : size;
   // const randomXpos = Math.random() * ctx.canvas.width;
