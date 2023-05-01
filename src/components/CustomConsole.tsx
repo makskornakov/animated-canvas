@@ -1,16 +1,14 @@
 import { ConsoleContainer, Indicator } from '@/styles/Canvas.styled';
 import { keyToName } from '@/utils/keyFunc';
 import { useRef, createRef, useEffect } from 'react';
+import { consolesIWannaSee } from './defaultSettings';
 
 export default function CustomConsole() {
-  // ? Create refs for each console log that needs to be visualized
   const consoleSpanRefs = useRef({
-    animationStartRef: createRef<HTMLDivElement>(), // ? console.log('animationStartRef')
-    animationCleanRef: createRef<HTMLDivElement>(),
-    resizeRef: createRef<HTMLDivElement>(),
-    drawTickRef: createRef<HTMLDivElement>(),
-    overlayDrawRef: createRef<HTMLDivElement>(),
-    // Add more refs here as needed
+    ...consolesIWannaSee.reduce((acc, key) => {
+      acc[key] = createRef<HTMLDivElement>();
+      return acc;
+    }, {} as { [key: string]: React.RefObject<HTMLDivElement> }),
   });
 
   type ConsoleRefs = typeof consoleSpanRefs.current;

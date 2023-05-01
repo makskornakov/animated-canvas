@@ -6,27 +6,30 @@ import {
   tickCircleDraw,
   tickSquareDraw,
 } from '@/utils/engine';
-import { AnimationName, SettingList, Settings } from './Canvas';
+import { SettingList, Settings } from './Canvas';
 
-type Animations = {
-  [key in AnimationName]: {
-    tick: (ctx: CanvasRenderingContext2D, settings: Settings) => void;
-    overlay: (ctx: CanvasRenderingContext2D, settings: Settings) => void;
-  };
+type Animation = {
+  tick: (ctx: CanvasRenderingContext2D, settings: Settings) => void;
+  overlay: (ctx: CanvasRenderingContext2D, settings: Settings) => void;
 };
 
-const animations: Animations = {
-  ball: {
-    tick: tickCircleDraw,
-    overlay: overlayCircleDraw,
-  },
-  square: {
-    tick: tickSquareDraw,
-    overlay: overlaySquareDraw,
-  },
+// animations should be of type Animations but another unique type so it can be then referenced to get the type with object keys
+const ball: Animation = {
+  tick: tickCircleDraw,
+  overlay: overlayCircleDraw,
+};
+const square: Animation = {
+  tick: tickSquareDraw,
+  overlay: overlaySquareDraw,
+};
+const animations = {
+  ball,
+  square,
 };
 
-type Action = { type: AnimationName; setting: Partial<Settings> };
+export type AnimationName = keyof typeof animations;
+
+type Action = { type: string; setting: Partial<Settings> };
 
 function settingsReducer(state: SettingList, action: Action): SettingList {
   return {
@@ -44,7 +47,7 @@ export default function AnimatedCanvas({
   generalSettings,
   setFrameRate,
 }: {
-  animationName: AnimationName;
+  animationName: keyof typeof animations;
   initialAllAnimationSettings: SettingList;
   generalSettings: Settings;
   setFrameRate: React.Dispatch<React.SetStateAction<number>>;

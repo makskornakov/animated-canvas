@@ -1,15 +1,15 @@
-import type { AnimationName, Settings } from './Canvas';
+import type { Settings } from './Canvas';
 export default function Settings({
-  animationName,
+  categoryName,
   settings,
   setSettings,
 }: {
-  animationName: AnimationName;
+  categoryName: keyof Settings;
   settings: Settings;
   setSettings: React.Dispatch<React.SetStateAction<{ [key: string]: Settings }>>;
 }) {
   return (
-    <div key={animationName}>
+    <div key={categoryName}>
       {Object.entries(settings).map(([key, setting]) => {
         return (
           <span key={key}>
@@ -35,12 +35,12 @@ export default function Settings({
               onChange={(e) =>
                 setSettings((prev) => {
                   const newSettings = { ...prev };
-                  newSettings[animationName][key as keyof Settings] = {
-                    ...prev[animationName][key as keyof Settings],
+                  newSettings[categoryName][key as keyof Settings] = {
+                    ...prev[categoryName][key as keyof Settings],
                     value:
-                      typeof prev[animationName][key as keyof Settings].value === 'boolean'
+                      typeof prev[categoryName][key as keyof Settings].value === 'boolean'
                         ? e.target.checked
-                        : typeof prev[animationName][key as keyof Settings].value === 'number'
+                        : typeof prev[categoryName][key as keyof Settings].value === 'number'
                         ? e.target.valueAsNumber
                         : e.target.value,
                   };

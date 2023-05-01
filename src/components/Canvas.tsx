@@ -8,8 +8,9 @@ import {
 } from '@/styles/Canvas.styled';
 import Settings from './Settings';
 import Fps from './Fps';
-import AnimatedCanvas from './AnimatedCanvas';
+import AnimatedCanvas, { AnimationName } from './AnimatedCanvas';
 import CustomConsole from './CustomConsole';
+import { animationSettingsSetter, otherSettingsSetter } from './defaultSettings';
 export interface Settings {
   [key: string]: {
     value: boolean | number | string;
@@ -22,58 +23,6 @@ export interface Settings {
 export interface SettingList {
   [key: string]: Settings;
 }
-
-export const animationSettingsSetter: SettingList = {
-  ball: {
-    size: {
-      value: 100,
-      min: 10,
-      max: 300,
-    },
-    randomSize: {
-      value: false,
-    },
-    randomX: {
-      value: false,
-    },
-    randomY: {
-      value: false,
-    },
-  },
-  square: {
-    size: {
-      value: 100,
-      min: 10,
-      max: 300,
-    },
-    randomSize: {
-      value: false,
-    },
-    randomForce: {
-      value: 0.2,
-      max: 2,
-      step: 0.01,
-    },
-  },
-};
-
-const otherSettingsSetter: SettingList = {
-  general: {
-    canvasOverlay: {
-      value: false,
-    },
-    canvasOverlayBehind: {
-      value: false,
-    },
-    overlayOpacity: {
-      value: 0.5,
-      max: 1,
-      step: 0.01,
-    },
-  },
-};
-
-export type AnimationName = keyof typeof animationSettingsSetter;
 
 export default function Canvas() {
   const [frameRate, setFrameRate] = useState<number>(0);
@@ -103,12 +52,12 @@ export default function Canvas() {
       <div>
         <SettingsContainer>
           <Settings
-            animationName={animationName}
+            categoryName={animationName}
             settings={animationSettings[animationName]}
             setSettings={setAnimationSettings}
           />
           <Settings
-            animationName="general"
+            categoryName="general"
             settings={otherSettings.general}
             setSettings={setOtherSettings}
           />
