@@ -116,6 +116,7 @@ export const ConsoleContainer = styled.div`
     font-size: 0.9rem;
     width: 90%;
     display: flex;
+    align-items: center;
     justify-content: space-between;
 
     & > span:first-child {
@@ -134,10 +135,13 @@ export const Indicator = styled.span`
   width: 30%;
   text-align: center;
   font-size: 1.2rem;
-  color: lightgray;
 
-  ::after {
-    content: '•';
+  & > div {
+    height: 0.65rem;
+    aspect-ratio: 1/1;
+
+    border-radius: 50%;
+    background: lightgray;
   }
 `;
 

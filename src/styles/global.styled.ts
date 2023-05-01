@@ -11,6 +11,8 @@ export const GlobalStyle = createGlobalStyle`
     --eerieBlack: #191919;
     --platinum: #E6E8E6;
     --coquelicot: #F15025;
+    --green: #8BF125;
+    --myGreen: #a4de02;
   }
 
   body {
