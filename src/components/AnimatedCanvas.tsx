@@ -1,4 +1,4 @@
-import { useRef, useEffect, useCallback, useState, useMemo, useReducer } from 'react';
+import { useRef, useEffect, useCallback, useState, useReducer } from 'react';
 import { CanvasElement, CanvasOverlay } from '@/styles/Canvas.styled';
 import {
   overlayCircleDraw,
@@ -57,9 +57,6 @@ export default function AnimatedCanvas({
     height: 0,
   });
   const [allAnimationSettings] = useReducer(settingsReducer, initialAllAnimationSettings);
-  // const settings = useMemo(() => {
-  //   return allAnimationSettings[animationName];
-  // }, [allAnimationSettings, animationName]);
 
   // ?Resize the canvas to fill browser window dynamically
   const resize = useCallback(() => {

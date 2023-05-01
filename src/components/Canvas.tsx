@@ -86,7 +86,7 @@ export default function Canvas() {
     <PageContainer>
       <SideBar>
         <DetailCard>
-          <label htmlFor="animationName">Animation Name</label>
+          <label htmlFor="animationName">Select Animation</label>
           <select
             onChange={(e) => setAnimationName(e.target.value as AnimationName)}
             id="animationName"
