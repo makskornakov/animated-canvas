@@ -1,6 +1,10 @@
 import styled, { css } from 'styled-components';
 
-export const FpsSpan = styled.span<{ fps: number }>`
+type FpsSpanProps = {
+  fps: number;
+};
+
+export const FpsSpan = styled.span<FpsSpanProps>`
   position: absolute;
   top: 0.4rem;
   left: 0.5rem;
@@ -10,7 +14,7 @@ export const FpsSpan = styled.span<{ fps: number }>`
   color: ${({ fps }) =>
     fps > 55 ? '#8bf125' : fps > 30 ? '#eef125' : fps > 15 ? '#f19225' : '#f12525'};
 
-  span {
+  & > span {
     color: lightgray;
     font-size: 0.6rem;
     vertical-align: top;
