@@ -1,4 +1,4 @@
-import Playground from '@/components/Playground';
+import Landing from '@/components/Landing';
 import Head from 'next/head';
 
 export default function Home() {
@@ -10,8 +10,7 @@ export default function Home() {
         <meta name="description" content="Canvas Playground" />
       </Head>
       <main>
-        <h1>Canvas Playground</h1>
-        <a href="/play">Enter the Playground</a>
+        <Landing />
       </main>
     </>
   );
