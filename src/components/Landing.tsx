@@ -1,8 +1,10 @@
+import Link from 'next/link';
+
 export default function Landing() {
   return (
     <>
       <h1>Canvas Playground</h1>
-      <a href="/play">Enter the Playground</a>
+      <Link href="/play">Enter the Playground</Link>
     </>
   );
 }
