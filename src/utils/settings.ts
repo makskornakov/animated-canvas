@@ -36,12 +36,6 @@ export const animationSettingsSetter: SettingList = {
     randomY: {
       value: false,
     },
-    test: {
-      value: 'test',
-    },
-    test2: {
-      value: 'test2',
-    },
   },
   square: {
     size: {
@@ -69,7 +63,7 @@ export const otherSettingsSetter: SettingList = {
       value: false,
     },
     overlayOpacity: {
-      value: 0.5,
+      value: 0.8,
       max: 1,
       step: 0.01,
     },

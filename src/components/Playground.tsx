@@ -6,10 +6,10 @@ import {
   SettingsContainer,
   SideBar,
 } from '@/styles/Canvas.styled';
-import DynamicSettings from './DynamicSettings';
-import Fps from './Fps';
-import AnimatedCanvas from './AnimatedCanvas';
-import CustomConsole from './CustomConsole';
+import DynamicSettings from './Canvas/DynamicSettings';
+import Fps from './Canvas/Fps';
+import AnimatedCanvas from './Canvas/AnimatedCanvas';
+import CustomConsole from './Canvas/CustomConsole';
 import { animationSettingsSetter, otherSettingsSetter } from '../utils/settings';
 import type { SettingList } from '../utils/settings';
 import type { AnimationName } from '../utils/animations';

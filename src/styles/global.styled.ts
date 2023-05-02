@@ -19,7 +19,8 @@ export const GlobalStyle = createGlobalStyle`
     margin: 0;
     padding: 0;
     font-family: 'montserrat', sans-serif;
-    background-color: #090909;
+    background: #090909;
+    
     color: #fff;
   }
 
@@ -29,10 +30,14 @@ export const GlobalStyle = createGlobalStyle`
     margin: 0;
   }
   main {
+    width: 100%;
+    height: 100%;
     margin: 1em 0 0 0;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
+
+    
   }
 `;

@@ -1,6 +1,6 @@
 import { useRef, useEffect, useCallback, useState, useReducer } from 'react';
 import { CanvasElement, CanvasOverlay } from '@/styles/Canvas.styled';
-import { animations } from '../utils/animations';
+import { animations } from '@/utils/animations';
 import type { SettingList, Settings } from '@/utils/settings';
 
 type Action = { type: string; setting: Partial<Settings> };
