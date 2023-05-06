@@ -1,10 +1,17 @@
 import Link from 'next/link';
+import SpaceBackground from './SpaceBackground';
 
 export default function Landing() {
   return (
-    <>
-      <h1>Canvas Playground</h1>
-      <Link href="/play">Enter the Playground</Link>
-    </>
+    // <div
+    //   style={{
+    //     width: '100vw',
+    //     height: '100vh',
+
+    //     backgroundColor: 'orange',
+    //   }}
+    // >
+    <SpaceBackground />
+    // </div>
   );
 }
