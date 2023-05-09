@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import SpaceBackground from './SpaceBackground';
+import SpaceBackground from './Background/SpaceBackground';
 
 export default function Landing() {
   return (
