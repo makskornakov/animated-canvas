@@ -105,6 +105,7 @@ export function drawSpace(grid: Grid, ctx: CanvasRenderingContext2D) {
   areas.set(2, area2);
   areas.set(3, area3);
   areas.set(4, area4);
+  const stars = new Map<number, number>();
 
   // in the middle of teach area write its area
   quadrants.forEach((some, i) => {
@@ -124,6 +125,17 @@ export function drawSpace(grid: Grid, ctx: CanvasRenderingContext2D) {
       `${areas.get(i + 1)}`,
       (quadrant.x1 + quadrant.x2) / 2,
       (quadrant.y1 + quadrant.y2) / 2,
+    );
+    const starsNum = Math.round(Math.sqrt((areas.get(i + 1) as number) / 4));
+    stars.set(i + 1, starsNum);
+    // fill smaller text underneeth the are text
+    ctx.fillStyle = `rgba(255, 150, 0, 0.7)`;
+
+    ctx.font = `400 ${cell.size / 2}px Helvetica, Arial, sans-serif`;
+    ctx.fillText(
+      `${stars.get(i + 1)} ★`,
+      (quadrant.x1 + quadrant.x2) / 2,
+      (quadrant.y1 + quadrant.y2) / 2 + cell.size / 1.4,
     );
 
     ctx.fillStyle = `rgba(255, 255, 255, 0.15)`;
