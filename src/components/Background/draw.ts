@@ -20,7 +20,7 @@ export function drawGrid(grid: Grid, ctx: CanvasRenderingContext2D) {
       // ctx.closePath();
 
       ctx.font = `${size / 4.5}px Sans-Serif`;
-      ctx.fillStyle = 'gray';
+      ctx.fillStyle = 'lightgray';
       ctx.textBaseline = 'middle';
       ctx.textAlign = 'center';
       ctx.fillText(`${i}, ${j}`, x, y);
@@ -43,12 +43,19 @@ type Point = {
   y: number;
 };
 
+interface Star {
+  x: number;
+  y: number;
+  color: string;
+  size?: number;
+}
+
 export function drawSpace(grid: Grid, ctx: CanvasRenderingContext2D) {
   // 1. choose a random cell in the grid
   if (!grid.length) return;
-  const x = Math.floor(Math.random() * grid.length);
-  const y = Math.floor(Math.random() * grid[0].length);
-  const cell = grid[x][y];
+  const boomX = Math.floor(Math.random() * grid.length);
+  const boomY = Math.floor(Math.random() * grid[0].length);
+  const cell = grid[boomX][boomY];
 
   // draw a circle in the center of the cell
   ctx.globalCompositeOperation = 'destination-over';
@@ -60,47 +67,47 @@ export function drawSpace(grid: Grid, ctx: CanvasRenderingContext2D) {
 
   //? has one point that is opposite to the corner that the key is named
   const surroundings: { [key: string]: [Point, Point] | false } = {
-    topLeft: x > 0 &&
-      y > 0 && [
+    topLeft: boomX > 0 &&
+      boomY > 0 && [
         {
           x: 0,
           y: 0,
         },
         {
-          x: x - 1,
-          y: y - 1,
+          x: boomX - 1,
+          y: boomY - 1,
         },
       ],
-    topRight: x < grid.length - 1 &&
-      y > 0 && [
+    topRight: boomX < grid.length - 1 &&
+      boomY > 0 && [
         {
-          x: x + 1,
+          x: boomX + 1,
           y: 0,
         },
         {
           x: grid.length - 1,
-          y: y - 1,
+          y: boomY - 1,
         },
       ],
-    bottomRight: x < grid.length - 1 &&
-      y < grid[0].length - 1 && [
+    bottomRight: boomX < grid.length - 1 &&
+      boomY < grid[0].length - 1 && [
         {
-          x: x + 1,
-          y: y + 1,
+          x: boomX + 1,
+          y: boomY + 1,
         },
         {
           x: grid.length - 1,
           y: grid[0].length - 1,
         },
       ],
-    bottomLeft: x > 0 &&
-      y < grid[0].length - 1 && [
+    bottomLeft: boomX > 0 &&
+      boomY < grid[0].length - 1 && [
         {
           x: 0,
-          y: y + 1,
+          y: boomY + 1,
         },
         {
-          x: x - 1,
+          x: boomX - 1,
           y: grid[0].length - 1,
         },
       ],
@@ -145,14 +152,6 @@ export function drawSpace(grid: Grid, ctx: CanvasRenderingContext2D) {
     const starsNum = Math.round(starsAmount);
     stars.set(key, starsNum);
     // fill smaller text underneeth the are text
-    ctx.fillStyle = `rgba(255, 150, 0, 0.7)`;
-
-    ctx.font = `400 ${cell.size / 2}px Helvetica, Arial, sans-serif`;
-    ctx.fillText(
-      `${stars.get(key)} ★`,
-      (quadrant.x1 + quadrant.x2) / 2,
-      (quadrant.y1 + quadrant.y2) / 2 + cell.size / 2,
-    );
 
     ctx.fillStyle = `rgba(255, 255, 255, 0.15)`;
     ctx.globalCompositeOperation = 'destination-over';
@@ -178,6 +177,62 @@ export function drawSpace(grid: Grid, ctx: CanvasRenderingContext2D) {
     }
   });
   console.log(stars);
+  console.log(squares);
+
+  // for each star generate amount of stars in the relevant square
+
+  const starGridCords = new Map<string, Point[]>();
+
+  stars.forEach((amount, key) => {
+    const quadrant = surroundings[key];
+    if (!quadrant) return;
+    const xRange = Math.abs(quadrant[0].x - quadrant[1].x);
+    const yRange = Math.abs(quadrant[0].y - quadrant[1].y);
+    console.log('range', xRange, yRange);
+
+    const x1 = Math.min(quadrant[0].x, quadrant[1].x);
+    const y1 = Math.min(quadrant[0].y, quadrant[1].y);
+
+    while (starGridCords.get(key)?.length !== amount) {
+      const x = Math.floor(Math.random() * xRange + x1);
+      const y = Math.floor(Math.random() * yRange + y1);
+      const randomPoint = {
+        x,
+        y,
+      } as Point;
+      if (starGridCords.get(key)?.includes(randomPoint)) continue;
+      starGridCords.set(key, [...(starGridCords.get(key) || []), randomPoint]);
+    }
+  });
+  console.log(starGridCords);
+
+  // generate coordinates for each star
+  const starArray: Star[] = [];
+  starGridCords.forEach((points, key) => {
+    points.forEach((point) => {
+      const { x, y } = point;
+      const cords = grid[x][y];
+      if (!cords) return;
+      starArray.push({
+        x: cords.x,
+        y: cords.y,
+        color: colors[Math.floor(Math.random() * colors.length)],
+      });
+    });
+  });
+
+  // for each point draw a star in the center of the x y cell
+  ctx.globalCompositeOperation = 'destination-over';
+
+  starArray.forEach((star) => {
+    ctx.fillStyle = star.color;
+    const { x, y } = star;
+    // ✱
+    ctx.font = `${cell.size / 1.5}px Helvetica, Arial, sans-serif`;
+    ctx.textBaseline = 'middle';
+    ctx.textAlign = 'center';
+    ctx.fillText(`✱`, x, y);
+  });
 }
 
 const colors = [
