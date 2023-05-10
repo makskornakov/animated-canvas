@@ -29,11 +29,20 @@ export function drawGrid(grid: Grid, ctx: CanvasRenderingContext2D) {
 }
 
 interface Area {
-  x1: number;
-  x2: number;
-  y1: number;
-  y2: number;
+  cords: {
+    x1: number;
+    x2: number;
+    y1: number;
+    y2: number;
+  };
+  cells: number;
 }
+
+type Point = {
+  x: number;
+  y: number;
+};
+
 export function drawSpace(grid: Grid, ctx: CanvasRenderingContext2D) {
   // 1. choose a random cell in the grid
   if (!grid.length) return;
@@ -49,84 +58,90 @@ export function drawSpace(grid: Grid, ctx: CanvasRenderingContext2D) {
   ctx.fill();
   ctx.closePath();
 
-  const firstQuadrant = x > 0 &&
-    y > 0 && {
-      x1: grid[0][0].x,
-      y1: grid[0][0].y,
-      x2: grid[x - 1][y - 1].x,
-      y2: grid[x - 1][y - 1].y,
-    };
+  //? has one point that is opposite to the corner that the key is named
+  const surroundings: { [key: string]: [Point, Point] | false } = {
+    topLeft: x > 0 &&
+      y > 0 && [
+        {
+          x: 0,
+          y: 0,
+        },
+        {
+          x: x - 1,
+          y: y - 1,
+        },
+      ],
+    topRight: x < grid.length - 1 &&
+      y > 0 && [
+        {
+          x: x + 1,
+          y: 0,
+        },
+        {
+          x: grid.length - 1,
+          y: y - 1,
+        },
+      ],
+    bottomRight: x < grid.length - 1 &&
+      y < grid[0].length - 1 && [
+        {
+          x: x + 1,
+          y: y + 1,
+        },
+        {
+          x: grid.length - 1,
+          y: grid[0].length - 1,
+        },
+      ],
+    bottomLeft: x > 0 &&
+      y < grid[0].length - 1 && [
+        {
+          x: 0,
+          y: y + 1,
+        },
+        {
+          x: x - 1,
+          y: grid[0].length - 1,
+        },
+      ],
+  };
 
-  const area1 = x * y;
-  console.log('area 1', area1);
+  // generate coordinates from the surroundings
+  const squares: Area[] = [];
+  for (const key in surroundings) {
+    if (!surroundings[key]) continue;
+    const [p1, p2] = surroundings[key] as [Point, Point];
+    squares.push({
+      cords: {
+        x1: grid[p1.x][p1.y].x,
+        y1: grid[p1.x][p1.y].y,
+        x2: grid[p2.x][p2.y].x,
+        y2: grid[p2.x][p2.y].y,
+      },
+      cells: (Math.abs(p1.x - p2.x) + 1) * (Math.abs(p1.y - p2.y) + 1),
+    });
+  }
 
-  const secondQuadrant = x < grid.length - 1 &&
-    y > 0 && {
-      x1: grid[x + 1][0].x,
-      y1: grid[x + 1][0].y,
-      x2: grid[grid.length - 1][y - 1].x,
-      y2: grid[grid.length - 1][y - 1].y,
-    };
-  const area2 = (grid.length - x - 1) * y;
-  console.log('area 2', area2);
-
-  const thirdQuadrant = x < grid.length - 1 &&
-    y < grid[0].length - 1 && {
-      x1: grid[x + 1][y + 1].x,
-      y1: grid[x + 1][y + 1].y,
-      x2: grid[grid.length - 1][grid[0].length - 1].x,
-      y2: grid[grid.length - 1][grid[0].length - 1].y,
-    };
-
-  const area3 = (grid.length - x - 1) * (grid[0].length - y - 1);
-  console.log('area 3', area3);
-
-  const fourthQuadrant = x > 0 &&
-    y < grid[0].length - 1 && {
-      x1: grid[0][y + 1].x,
-      y1: grid[0][y + 1].y,
-      x2: grid[x - 1][grid[0].length - 1].x,
-      y2: grid[x - 1][grid[0].length - 1].y,
-    };
-
-  const area4 = x * (grid[0].length - y - 1);
-  console.log('area 4', area4);
-
-  const quadrants: Area[] = [
-    firstQuadrant as Area,
-    secondQuadrant as Area,
-    thirdQuadrant as Area,
-    fourthQuadrant as Area,
-  ];
-
-  // const areas = nmap with increimenting numbers
-  const areas = new Map<number, number>();
-  areas.set(1, area1);
-  areas.set(2, area2);
-  areas.set(3, area3);
-  areas.set(4, area4);
   const stars = new Map<number, number>();
 
   // in the middle of teach area write its area
-  quadrants.forEach((some, i) => {
+  squares.forEach((some, i) => {
     if (!some) return;
     const quadrant = {
-      x1: some.x1 - cell.size / 2,
-      x2: some.x2 + cell.size / 2,
-      y1: some.y1 - cell.size / 2,
-      y2: some.y2 + cell.size / 2,
+      x1: some.cords.x1 - cell.size / 2,
+      x2: some.cords.x2 + cell.size / 2,
+      y1: some.cords.y1 - cell.size / 2,
+      y2: some.cords.y2 + cell.size / 2,
     };
 
     ctx.font = `${cell.size}px Helvetica, Arial, sans-serif`;
     ctx.fillStyle = `rgba(0, 255, 255, 0.6)`;
     ctx.textBaseline = 'middle';
     ctx.textAlign = 'center';
-    ctx.fillText(
-      `${areas.get(i + 1)}`,
-      (quadrant.x1 + quadrant.x2) / 2,
-      (quadrant.y1 + quadrant.y2) / 2,
-    );
-    const starsNum = Math.round(Math.sqrt((areas.get(i + 1) as number) / 4));
+    ctx.fillText(`${some.cells}`, (quadrant.x1 + quadrant.x2) / 2, (quadrant.y1 + quadrant.y2) / 2);
+    const area = some.cells;
+    const starsAmount = 0.3 * Math.sqrt(area);
+    const starsNum = Math.round(starsAmount);
     stars.set(i + 1, starsNum);
     // fill smaller text underneeth the are text
     ctx.fillStyle = `rgba(255, 150, 0, 0.7)`;
@@ -135,7 +150,7 @@ export function drawSpace(grid: Grid, ctx: CanvasRenderingContext2D) {
     ctx.fillText(
       `${stars.get(i + 1)} ★`,
       (quadrant.x1 + quadrant.x2) / 2,
-      (quadrant.y1 + quadrant.y2) / 2 + cell.size / 1.4,
+      (quadrant.y1 + quadrant.y2) / 2 + cell.size / 2,
     );
 
     ctx.fillStyle = `rgba(255, 255, 255, 0.15)`;
@@ -147,8 +162,8 @@ export function drawSpace(grid: Grid, ctx: CanvasRenderingContext2D) {
     const colorsDots = ['lime', 'cyan', 'orange', 'hotpink'];
     for (let i = 0; i < 4; i++) {
       ctx.fillStyle = colorsDots[i];
-      const x = i % 2 ? some.x2 : some.x1;
-      const y = i < 2 ? some.y1 : some.y2;
+      const x = i % 2 ? some.cords.x2 : some.cords.x1;
+      const y = i < 2 ? some.cords.y1 : some.cords.y2;
       ctx.beginPath();
       ctx.arc(x, y, cell.size / 10, 0, 2 * Math.PI);
       ctx.fill();
