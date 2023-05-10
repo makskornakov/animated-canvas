@@ -160,15 +160,21 @@ export function drawSpace(grid: Grid, ctx: CanvasRenderingContext2D) {
     ctx.fillRect(quadrant.x1, quadrant.y1, quadrant.x2 - quadrant.x1, quadrant.y2 - quadrant.y1);
     ctx.globalCompositeOperation = 'source-over';
 
-    const colorsDots = ['lime', 'cyan', 'orange', 'hotpink'];
+    const symbols = ['┌', '┐', '└', '┘'];
+    ctx.fillStyle = 'lime';
+
     for (let i = 0; i < 4; i++) {
-      ctx.fillStyle = colorsDots[i];
       const x = i % 2 ? some.cords.x2 : some.cords.x1;
       const y = i < 2 ? some.cords.y1 : some.cords.y2;
-      ctx.beginPath();
-      ctx.arc(x, y, cell.size / 10, 0, 2 * Math.PI);
-      ctx.fill();
-      ctx.closePath();
+
+      ctx.font = ` ${cell.size / 1.5}px Helvetica, Arial, sans-serif`;
+      ctx.textBaseline = 'middle';
+      ctx.textAlign = 'center';
+
+      const fontX = x + (i % 2 ? cell.size / 2.5 : -cell.size / 2.5);
+      const fontY = y + (i < 2 ? -cell.size / 2.5 : cell.size / 2.5);
+
+      ctx.fillText(symbols[i], fontX, fontY);
     }
   });
   console.log(stars);
