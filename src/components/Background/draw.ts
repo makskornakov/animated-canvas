@@ -107,11 +107,12 @@ export function drawSpace(grid: Grid, ctx: CanvasRenderingContext2D) {
   };
 
   // generate coordinates from the surroundings
-  const squares: Area[] = [];
+  // map with keys and values of cords+ cells
+  const squares: Map<string, Area> = new Map();
   for (const key in surroundings) {
     if (!surroundings[key]) continue;
     const [p1, p2] = surroundings[key] as [Point, Point];
-    squares.push({
+    squares.set(key, {
       cords: {
         x1: grid[p1.x][p1.y].x,
         y1: grid[p1.x][p1.y].y,
@@ -122,10 +123,10 @@ export function drawSpace(grid: Grid, ctx: CanvasRenderingContext2D) {
     });
   }
 
-  const stars = new Map<number, number>();
+  const stars = new Map<string, number>();
 
   // in the middle of teach area write its area
-  squares.forEach((some, i) => {
+  squares.forEach((some, key) => {
     if (!some) return;
     const quadrant = {
       x1: some.cords.x1 - cell.size / 2,
@@ -142,13 +143,13 @@ export function drawSpace(grid: Grid, ctx: CanvasRenderingContext2D) {
     const area = some.cells;
     const starsAmount = 0.3 * Math.sqrt(area);
     const starsNum = Math.round(starsAmount);
-    stars.set(i + 1, starsNum);
+    stars.set(key, starsNum);
     // fill smaller text underneeth the are text
     ctx.fillStyle = `rgba(255, 150, 0, 0.7)`;
 
     ctx.font = `400 ${cell.size / 2}px Helvetica, Arial, sans-serif`;
     ctx.fillText(
-      `${stars.get(i + 1)} ★`,
+      `${stars.get(key)} ★`,
       (quadrant.x1 + quadrant.x2) / 2,
       (quadrant.y1 + quadrant.y2) / 2 + cell.size / 2,
     );
@@ -170,6 +171,7 @@ export function drawSpace(grid: Grid, ctx: CanvasRenderingContext2D) {
       ctx.closePath();
     }
   });
+  console.log(stars);
 }
 
 const colors = [

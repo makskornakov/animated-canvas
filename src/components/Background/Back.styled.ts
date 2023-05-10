@@ -4,7 +4,7 @@ export const DevDiv = styled.div`
   position: absolute;
   width: 10em;
   top: 1em;
-  gap: 0.5em;
+  gap: 0.75em;
   padding: 1em 0;
   right: -9.5em;
   box-sizing: border-box;
@@ -12,6 +12,7 @@ export const DevDiv = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  border-left: 0.5em solid rgba(139, 241, 37, 0.7);
   justify-content: center;
   border-radius: 1em;
   transition: right 0.4s ease-in-out;
@@ -20,6 +21,8 @@ export const DevDiv = styled.div`
   background: rgba(200, 200, 200, 0.8);
 
   a {
+    padding: 0;
+    margin: 0;
     color: blue;
     transition: color 0.2s;
 
@@ -27,11 +30,17 @@ export const DevDiv = styled.div`
       color: red;
     }
   }
+  > span {
+    font-size: 0.8em;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.75em;
+  }
 
   button {
-    margin: 0.5em;
     padding: 0.5em;
-    font-size: 0.8em;
     border-radius: 0.5em;
     border: none;
     font-weight: 400;

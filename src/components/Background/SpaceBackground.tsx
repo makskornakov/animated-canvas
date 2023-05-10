@@ -1,4 +1,4 @@
-import { useRef, useEffect, useCallback, useState } from 'react';
+import { useRef, useEffect, useCallback, useState, use } from 'react';
 import { lighten } from 'polished';
 import { drawGrid, drawSpace } from './draw';
 import { BackCanvas, DevDiv } from './Back.styled';
@@ -80,8 +80,19 @@ export default function SpaceBackground() {
     drawSpace(grid, ctx);
   }, [grid]);
 
-  // when the mouse gets close to the dev div, it should slide left to be visible
-  // when the mouse gets away from the dev div, it should slide right to be invisible
+  // ? Press r to rerender
+  useEffect(() => {
+    // add r key listener
+    const keyDownHandler = (e: KeyboardEvent) => {
+      if (e.key === 'r') {
+        rerender();
+      }
+    };
+    window.addEventListener('keydown', keyDownHandler);
+    return () => {
+      window.removeEventListener('keydown', keyDownHandler);
+    };
+  }, [rerender]);
 
   useEffect(() => {
     const devDiv = devDivRef.current;
@@ -115,8 +126,11 @@ export default function SpaceBackground() {
   return (
     <>
       <DevDiv ref={devDivRef}>
-        <button onClick={rerender}>Rerender</button>
+        <span>
+          <button onClick={rerender}>Rerender</button> [R]
+        </span>
         <Link href="/play">Play</Link>
+        <label>Settings</label>
       </DevDiv>
       <BackCanvas ref={canvasRef} />
     </>
