@@ -1,6 +1,7 @@
 import { useRef, useEffect, useCallback, useState, use } from 'react';
 import { lighten } from 'polished';
-import { drawGrid, drawSpace } from './draw';
+import { drawSpace } from './render';
+import { drawGrid } from './draw';
 import { BackCanvas, DevDiv } from './Back.styled';
 import Link from 'next/link';
 
@@ -11,13 +12,15 @@ import Link from 'next/link';
 //* 4. Create a function that will render a set of points on the screen
 // ! Algorithm for calculating maximum points to be rendered in the most inefficient in terms of space usage way.
 
-type Coordinate = {
+export type Coordinate = {
   x: number;
   y: number;
   size: number;
 };
 
 export type Grid = Coordinate[][];
+
+const displayGrid = true;
 
 export default function SpaceBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -39,7 +42,7 @@ export default function SpaceBackground() {
     canvas.height = height;
 
     // generate grid
-    const netSize = 50;
+    const netSize = 40;
     const grid = getGrid(netSize * dpr, width, height);
     setGrid(grid);
   }, []);
@@ -53,31 +56,28 @@ export default function SpaceBackground() {
     // };
   }, [resize]);
 
-  // create set of points for star generation
-  useEffect(() => {
-    if (!grid) return;
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
+  function render(grid: Grid | null) {
+    const ctx = canvasRef.current?.getContext('2d');
     if (!ctx) return;
+    if (!grid) return;
 
-    console.log('grid', grid);
-    drawGrid(grid, ctx);
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    if (displayGrid)
+      requestAnimationFrame(() => {
+        drawGrid(grid, ctx);
+      });
+    requestAnimationFrame(() => {
+      drawSpace(grid, ctx);
+    });
+  }
 
-    drawSpace(grid, ctx);
+  useEffect(() => {
+    render(grid);
   }, [grid]);
 
   const rerender = useCallback(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    if (!grid) return;
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    drawGrid(grid, ctx);
-    drawSpace(grid, ctx);
+    console.log('rerender');
+    render(grid);
   }, [grid]);
 
   // ? Press r to rerender
