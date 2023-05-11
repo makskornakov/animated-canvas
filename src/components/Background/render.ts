@@ -1,4 +1,10 @@
-import { Coordinate, Grid } from './SpaceBackground';
+import {
+  Grid,
+  displaySurroundings,
+  growStep,
+  maxDistanceBetweenStars,
+  wallsExist,
+} from './SpaceBackground';
 import { drawBoom, drawStars, drawSurroundings } from './draw';
 
 export interface Area {
@@ -22,11 +28,6 @@ export interface StarGridFull extends Point {
   };
   completed: boolean;
 }
-
-// ? negative to allow for some overlap | positive to have gap between objects
-const maxDistanceBetweenStars = 0;
-const wallsExist = true;
-const displaySurroundings = true;
 
 type Surroundings = { [key: string]: [Point, Point] | false };
 
@@ -82,18 +83,16 @@ function getSurroundings(grid: Grid, boomX: number, boomY: number): Surroundings
 export function drawSpace(grid: Grid, ctx: CanvasRenderingContext2D) {
   if (!grid.length) return;
   console.log('drawing space');
+
   const boomX = Math.floor(Math.random() * grid.length);
   const boomY = Math.floor(Math.random() * grid[0].length);
   const cell = grid[boomX][boomY];
 
   if (displaySurroundings) drawBoom(ctx, cell);
 
-  //? has one point that is opposite to the corner that the key is named
   const surroundings = getSurroundings(grid, boomX, boomY);
-
-  // generate coordinates from the surroundings
-  // map with keys and values of cords+ cells
   const squares: Map<string, Area> = new Map();
+
   for (const key in surroundings) {
     if (!surroundings[key]) continue;
     const [p1, p2] = surroundings[key] as [Point, Point];
@@ -119,13 +118,12 @@ export function drawSpace(grid: Grid, ctx: CanvasRenderingContext2D) {
   // in the middle of teach area write its area
   if (displaySurroundings) drawSurroundings(squares, ctx, cell);
 
-  console.log(stars);
-  console.log(squares);
-
-  // for each star generate amount of stars in the relevant square
+  // * Consoles
+  // console.log(stars);
+  // console.log(squares);
 
   const starGridCords = new Map<string, Point[]>();
-  const MAX_ATTEMPTS = 100;
+  const MAX_ATTEMPTS = 100; // * Usually max attempts 2 is enough (amount of stars is controlled)
 
   stars.forEach((amount, key) => {
     const quadrant = surroundings[key];
@@ -189,10 +187,10 @@ export function drawSpace(grid: Grid, ctx: CanvasRenderingContext2D) {
       if (point.completed) return;
       const { x, y } = point;
 
-      const oneLarger = point.size.star + 1;
+      const oneLarger = point.size.star + growStep;
       if (oneLarger > point.size.wall && wallsExist) {
         starGridWithSize[i].completed = true;
-        // console.log('dont hit the wall');
+        // console.log(`don't hit the wall`);
         return;
       }
 
@@ -219,6 +217,5 @@ export function drawSpace(grid: Grid, ctx: CanvasRenderingContext2D) {
     });
   }
 
-  // ? Draw the Stars
   drawStars(starGridWithSize, ctx, cell, grid);
 }

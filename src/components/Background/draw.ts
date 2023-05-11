@@ -1,4 +1,12 @@
-import { Coordinate, Grid } from './SpaceBackground';
+import {
+  Coordinate,
+  Grid,
+  coreColor,
+  displayNextSize,
+  displayStarCore,
+  growStep,
+  starAreaColor,
+} from './SpaceBackground';
 import { Area, StarGridFull } from './render';
 
 export function drawGrid(grid: Grid, ctx: CanvasRenderingContext2D) {
@@ -6,8 +14,6 @@ export function drawGrid(grid: Grid, ctx: CanvasRenderingContext2D) {
   console.log('drawGrid');
 
   ctx.strokeStyle = 'lightgray';
-  // reset dash
-  ctx.setLineDash([]);
 
   for (let i = 0; i < grid.length; i++) {
     for (let j = 0; j < grid[i].length; j++) {
@@ -15,12 +21,6 @@ export function drawGrid(grid: Grid, ctx: CanvasRenderingContext2D) {
       const { size, x, y } = grid[i][j];
       ctx.lineWidth = 1;
       ctx.strokeRect(x - size / 2, y - size / 2, size, size);
-
-      // ? draw a circle in the center of the cell
-      // ctx.beginPath();
-      // ctx.arc(x, y, size / 2.5, 0, 2 * Math.PI);
-      // ctx.stroke();
-      // ctx.closePath();
 
       ctx.font = `${size / 4.5}px Sans-Serif`;
       ctx.fillStyle = 'lightgray';
@@ -97,28 +97,34 @@ export function drawStars(
     const { x, y, size } = point;
     const cords = grid[x][y];
 
-    // random color from color array
-    ctx.fillStyle = colors[Math.floor(Math.random() * colors.length)];
-    ctx.font = `${cell.size / 1.5}px Helvetica, Arial, sans-serif`;
-    ctx.textBaseline = 'middle';
-    ctx.textAlign = 'center';
-    ctx.fillText(`✱`, cords.x, cords.y);
-
-    ctx.setLineDash([cell.size / 4, cell.size / 4]);
-
-    ctx.strokeStyle = 'red';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.arc(cords.x, cords.y, (size.star + 1) * cell.size + cell.size / 2, 0, 2 * Math.PI);
-    ctx.stroke();
-    ctx.closePath();
-
     // fill the min circle
-    ctx.fillStyle = point.completed ? 'rgba(0, 255, 0, 0.25)' : 'rgba(255, 100, 0, 0.25)';
+    ctx.globalCompositeOperation = 'destination-over';
+    ctx.fillStyle = point.completed ? starAreaColor : 'rgba(255, 0, 0, 0.5)';
     ctx.beginPath();
     ctx.arc(cords.x, cords.y, size.star * cell.size + cell.size / 2, 0, 2 * Math.PI);
     ctx.fill();
     ctx.closePath();
+    ctx.globalCompositeOperation = 'source-over';
+
+    // random color from color array
+    if (displayStarCore) {
+      ctx.fillStyle = coreColor;
+      ctx.beginPath();
+      ctx.arc(cords.x, cords.y, cell.size / 5, 0, 2 * Math.PI);
+      ctx.fill();
+      ctx.closePath();
+    }
+
+    if (displayNextSize) {
+      ctx.setLineDash([cell.size / 4, cell.size / 4]);
+      ctx.strokeStyle = 'red';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(cords.x, cords.y, (size.star + growStep) * cell.size + cell.size / 2, 0, 2 * Math.PI);
+      ctx.stroke();
+      ctx.closePath();
+      ctx.setLineDash([]);
+    }
   });
 }
 const colors = [

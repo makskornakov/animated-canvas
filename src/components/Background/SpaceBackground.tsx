@@ -1,26 +1,28 @@
-import { useRef, useEffect, useCallback, useState, use } from 'react';
-import { lighten } from 'polished';
+import { useRef, useEffect, useCallback, useState } from 'react';
 import { drawSpace } from './render';
 import { drawGrid } from './draw';
 import { BackCanvas, DevDiv } from './Back.styled';
 import Link from 'next/link';
 
-//! PLAN
-//* 1. Create a type that stores smart points from which points are generated no matter what screen size it is and close results when resizing
-//* 2. SO once create randomness and smartly display it on the screen depending on the screen size
-//* 3. Create a function that will generate a set of points depending on the screen size
-//* 4. Create a function that will render a set of points on the screen
-// ! Algorithm for calculating maximum points to be rendered in the most inefficient in terms of space usage way.
+// * Settings
+const displayGrid = false;
+export const wallsExist = true;
+export const displaySurroundings = false;
+export const displayNextSize = false;
+export const displayStarCore = true;
+export const coreColor = 'rgba(255, 255, 255, 1)';
+export const starAreaColor = 'rgba(0, 255, 255, 0.5)';
+const netSize = 30; // * EX: 10 - small, 40 - medium, 100 - large
+export const maxDistanceBetweenStars = 0; // * EX: -1 - overlap, 0 - touching, 1 - gap
+export const growStep = 1; // * EX: 0.1 - precise, 0.5 - fast, 1 - very fast (cell size)
 
+// * Types
 export type Coordinate = {
   x: number;
   y: number;
   size: number;
 };
-
 export type Grid = Coordinate[][];
-
-const displayGrid = true;
 
 export default function SpaceBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -42,7 +44,6 @@ export default function SpaceBackground() {
     canvas.height = height;
 
     // generate grid
-    const netSize = 40;
     const grid = getGrid(netSize * dpr, width, height);
     setGrid(grid);
   }, []);
