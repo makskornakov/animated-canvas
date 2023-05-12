@@ -235,7 +235,7 @@ export default function SpaceBackground() {
             <input
               type="range"
               min="-10"
-              step={1}
+              step={0.1}
               max="10"
               value={generationSettings.maxDistanceBetweenStars}
               onChange={(e) => {
