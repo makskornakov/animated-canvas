@@ -1,4 +1,4 @@
-import { growStep, maxDistanceBetweenStars, wallsExist } from './SpaceBackground';
+// import { growStep, maxDistanceBetweenStars, wallsExist } from './SpaceBackground';
 import type {
   RenderedStarMap,
   Point,
@@ -59,7 +59,12 @@ function getSurroundings(grid: Grid, boomX: number, boomY: number): Surroundings
   };
 }
 
-export function drawSpace(grid: Grid): RenderedStarMap | false {
+export function drawSpace(
+  grid: Grid,
+  wallsExist: boolean,
+  growStep: number,
+  maxDistanceBetweenStars: number,
+): RenderedStarMap | false {
   if (!grid.length) return false;
   console.log('render space');
 
@@ -201,6 +206,7 @@ export function drawAll(
   cellSize: number,
   starMap: RenderedStarMap,
   settings: DrawSettings,
+  growStep: number,
 ) {
   console.log('draw space');
 

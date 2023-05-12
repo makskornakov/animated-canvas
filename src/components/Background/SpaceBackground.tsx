@@ -7,20 +7,14 @@ import Link from 'next/link';
 // * Settings
 const drawSettings = {
   starAreaColor: 'rgba(0, 255, 255, 0.5)',
-  displayStarCore: true,
+  displayStarCore: false,
   coreColor: 'rgba(255, 255, 255, 1)',
-  displayNextSize: false,
-  displaySurroundings: false,
-  displayGrid: false,
+  displayNextSize: true,
+  displaySurroundings: true,
+  displayGrid: true,
 };
 
 export type DrawSettings = typeof drawSettings;
-export const wallsExist = true;
-
-// const displayGrid = false;
-const netSize = 30; // * EX: 10 - small, 40 - medium, 100 - large
-export const maxDistanceBetweenStars = 0; // * EX: -1 - overlap, 0 - touching, 1 - gap
-export const growStep = 1; // * EX: 0.1 - precise, 0.5 - fast, 1 - very fast (cell size)
 
 // * Types
 export interface Area {
@@ -61,16 +55,25 @@ export type Grid = Coordinate[][];
 
 export default function SpaceBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const devDivRef = useRef<HTMLDivElement>(null);
+  const devDiv2Ref = useRef<HTMLDivElement>(null);
   const [grid, setGrid] = useState<Grid | null>(null);
   const [starMap, setStarMap] = useState<RenderedStarMap | null>(null);
-  const devDivRef = useRef<HTMLDivElement>(null);
-
-  // for each key of drawSettings create a state
   const [drawSettingsState, setDrawSettingsState] = useState<DrawSettings>(drawSettings);
+
+  //* render settings
+  const [netSize, setNetSize] = useState(30); // * EX: 10 - small, 40 - medium, 100 - large
+  const [generationSettings, setGenerationSettings] = useState({
+    maxDistanceBetweenStars: 0, // * EX: -1 - overlap, 0 - touching, 1 - gap
+    growStep: 1, // * EX: 0.1 - precise, 0.5 - fast, 1 - very fast (cell size)
+    wallsExist: true,
+  });
 
   const resize = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
+    setGrid(null);
+    setStarMap(null);
     const bounds = canvas.getBoundingClientRect();
     // const dpr = 0.1;
     const dpr = window.devicePixelRatio || 1;
@@ -85,7 +88,7 @@ export default function SpaceBackground() {
     // generate grid
     const grid = getGrid(netSize * dpr, width, height);
     setGrid(grid);
-  }, []);
+  }, [netSize]);
 
   useEffect(() => {
     resize();
@@ -96,39 +99,41 @@ export default function SpaceBackground() {
     // };
   }, [resize]);
 
-  function render(grid: Grid | null) {
+  const render = useCallback(() => {
     if (!grid) return;
+    setStarMap(null);
+    const { wallsExist, growStep, maxDistanceBetweenStars } = generationSettings;
+    const newStarMap = drawSpace(grid, wallsExist, growStep, maxDistanceBetweenStars);
+    if (newStarMap) setStarMap(newStarMap);
+  }, [grid, generationSettings]);
 
-    // requestAnimationFrame(() => {
-    //   drawSpace(grid);
-    // });
-    const starMap = drawSpace(grid);
-    if (starMap) setStarMap(starMap);
-  }
-
-  useEffect(() => {
-    if (!grid) return;
+  const drawEverything = useCallback(() => {
     const ctx = canvasRef.current?.getContext('2d');
     if (!ctx) return;
-
     if (!starMap) return;
+    if (!grid) return;
 
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     if (drawSettingsState.displayGrid)
       requestAnimationFrame(() => {
         drawGrid(grid, ctx);
       });
-    drawAll(ctx, grid, grid[0][0].size, starMap, drawSettingsState);
-  }, [drawSettingsState, grid, starMap]);
+    drawAll(ctx, grid, grid[0][0].size, starMap, drawSettingsState, generationSettings.growStep);
+  }, [drawSettingsState, grid, starMap, generationSettings.growStep]);
 
   useEffect(() => {
-    render(grid);
-  }, [grid]);
+    render();
+  }, [render]);
+
+  useEffect(() => {
+    drawEverything();
+  }, [drawEverything]);
 
   const rerender = useCallback(() => {
     console.log('rerender');
-    render(grid);
-  }, [grid]);
+
+    render();
+  }, [render]);
 
   // ? Press r to rerender
   useEffect(() => {
@@ -148,10 +153,11 @@ export default function SpaceBackground() {
 
   useEffect(() => {
     const devDiv = devDivRef.current;
-    if (!devDiv) return;
+    const devDiv2 = devDiv2Ref.current;
+    if (!devDiv || !devDiv2) return;
 
-    const mouseMoveHandler = (e: MouseEvent) => {
-      const devDivBounds = devDiv.getBoundingClientRect();
+    const mouseMoveHandler = (e: MouseEvent, div: HTMLDivElement, right: boolean = true) => {
+      const devDivBounds = div.getBoundingClientRect();
       const devDivCenterX = devDivBounds.left + devDivBounds.width / 2;
       const devDivCenterY = devDivBounds.top + devDivBounds.height / 2;
 
@@ -163,15 +169,25 @@ export default function SpaceBackground() {
         e.clientY > devDivCenterY - devDivHeight / 1.7 &&
         e.clientY < devDivCenterY + devDivHeight / 1.7
       ) {
-        devDiv.style.right = '1em';
+        if (right) div.style.right = '1em';
+        else div.style.left = '1em';
       } else {
-        devDiv.style.right = '-14.5em';
+        if (right) div.style.right = '-14.5em';
+        else div.style.left = '-14.5em';
       }
     };
+    const rightDivHandler = (e: MouseEvent) => {
+      mouseMoveHandler(e, devDiv);
+    };
+    const leftDivHandler = (e: MouseEvent) => {
+      mouseMoveHandler(e, devDiv2, false);
+    };
 
-    window.addEventListener('mousemove', mouseMoveHandler);
+    window.addEventListener('mousemove', rightDivHandler);
+    window.addEventListener('mousemove', leftDivHandler);
     return () => {
-      window.removeEventListener('mousemove', mouseMoveHandler);
+      window.removeEventListener('mousemove', rightDivHandler);
+      window.removeEventListener('mousemove', leftDivHandler);
     };
   }, []);
 
@@ -184,12 +200,91 @@ export default function SpaceBackground() {
         overflow: 'hidden',
       }}
     >
-      <DevDiv ref={devDivRef}>
+      <DevDiv ref={devDiv2Ref} right={false}>
+        <h3>Render Settings</h3>
+        <h4
+          style={{
+            fontWeight: '400',
+            color: '#f6ff00',
+          }}
+        >
+          [Requires rerender]
+        </h4>
         <span>
-          <button onClick={rerender}>Rerender</button> [R]
+          <button onClick={render}>Rerender</button> [R]
         </span>
-        <Link href="/play">Play</Link>
-        <h3>Settings</h3>
+        <SettingsSection>
+          <label>
+            Net size: {netSize}
+            {/* uses a lot of resources */}
+            <h5 style={netSize < 10 ? { color: 'red' } : {}}>Smaller net is resource intensive</h5>
+            <input
+              type="range"
+              min="1"
+              step={1}
+              max="100"
+              value={netSize}
+              onChange={(e) => {
+                setNetSize(+e.target.value);
+              }}
+            />
+          </label>
+          <label>
+            Max star distance: {generationSettings.maxDistanceBetweenStars}
+            <h5>Negative - overlap | Positive - space</h5>
+            <input
+              type="range"
+              min="-10"
+              step={1}
+              max="10"
+              value={generationSettings.maxDistanceBetweenStars}
+              onChange={(e) => {
+                setGenerationSettings({
+                  ...generationSettings,
+                  maxDistanceBetweenStars: +e.target.value,
+                });
+              }}
+            />
+          </label>
+          <label>
+            Grow step: {generationSettings.growStep}
+            <h5>Smaller step is more precise</h5>
+            <h5 style={generationSettings.growStep < 0.5 ? { color: 'red' } : {}}>
+              Smaller step is resource intensive
+            </h5>
+            <input
+              type="range"
+              min="0.1"
+              step={0.01}
+              max="5"
+              value={generationSettings.growStep}
+              onChange={(e) => {
+                setGenerationSettings({
+                  ...generationSettings,
+                  growStep: +e.target.value,
+                });
+              }}
+            />
+          </label>
+          <label>
+            Walls exist:
+            <input
+              type="checkbox"
+              checked={generationSettings.wallsExist}
+              onChange={(e) => {
+                setGenerationSettings({
+                  ...generationSettings,
+                  wallsExist: e.target.checked,
+                });
+              }}
+            />
+            <h5>Allow growing over the walls</h5>
+          </label>
+        </SettingsSection>
+      </DevDiv>
+      <DevDiv ref={devDivRef} right>
+        {/* <Link href="/play">Play</Link> */}
+        <h3>Visual Settings</h3>
         {renderedSettings(drawSettingsState, setDrawSettingsState)}
       </DevDiv>
       <BackCanvas ref={canvasRef} />
