@@ -1,22 +1,57 @@
-import { useRef, useEffect, useCallback, useState } from 'react';
-import { drawSpace } from './render';
+import { useRef, useEffect, useCallback, useState, SetStateAction } from 'react';
+import { drawAll, drawSpace } from './render';
 import { drawGrid } from './draw';
-import { BackCanvas, DevDiv } from './Back.styled';
+import { BackCanvas, DevDiv, SettingsSection } from './Back.styled';
 import Link from 'next/link';
 
 // * Settings
-const displayGrid = false;
+const drawSettings = {
+  starAreaColor: 'rgba(0, 255, 255, 0.5)',
+  displayStarCore: true,
+  coreColor: 'rgba(255, 255, 255, 1)',
+  displayNextSize: false,
+  displaySurroundings: false,
+  displayGrid: false,
+};
+
+export type DrawSettings = typeof drawSettings;
 export const wallsExist = true;
-export const displaySurroundings = false;
-export const displayNextSize = false;
-export const displayStarCore = true;
-export const coreColor = 'rgba(255, 255, 255, 1)';
-export const starAreaColor = 'rgba(0, 255, 255, 0.5)';
+
+// const displayGrid = false;
 const netSize = 30; // * EX: 10 - small, 40 - medium, 100 - large
 export const maxDistanceBetweenStars = 0; // * EX: -1 - overlap, 0 - touching, 1 - gap
 export const growStep = 1; // * EX: 0.1 - precise, 0.5 - fast, 1 - very fast (cell size)
 
 // * Types
+export interface Area {
+  cords: {
+    x1: number;
+    x2: number;
+    y1: number;
+    y2: number;
+  };
+  cells: number;
+}
+
+export type Point = {
+  x: number;
+  y: number;
+};
+export interface StarGridFull extends Point {
+  size: {
+    wall: number;
+    star: number;
+  };
+  completed: boolean;
+}
+export type RenderedStarMap = {
+  starGridWithSize: StarGridFull[];
+  squares: Map<string, Area>;
+  boomX: number;
+  boomY: number;
+};
+export type Surroundings = { [key: string]: [Point, Point] | false };
+
 export type Coordinate = {
   x: number;
   y: number;
@@ -27,13 +62,17 @@ export type Grid = Coordinate[][];
 export default function SpaceBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [grid, setGrid] = useState<Grid | null>(null);
+  const [starMap, setStarMap] = useState<RenderedStarMap | null>(null);
   const devDivRef = useRef<HTMLDivElement>(null);
+
+  // for each key of drawSettings create a state
+  const [drawSettingsState, setDrawSettingsState] = useState<DrawSettings>(drawSettings);
 
   const resize = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const bounds = canvas.getBoundingClientRect();
-    // const dpr = 1;
+    // const dpr = 0.1;
     const dpr = window.devicePixelRatio || 1;
 
     console.log('resize');
@@ -58,19 +97,29 @@ export default function SpaceBackground() {
   }, [resize]);
 
   function render(grid: Grid | null) {
-    const ctx = canvasRef.current?.getContext('2d');
-    if (!ctx) return;
     if (!grid) return;
 
+    // requestAnimationFrame(() => {
+    //   drawSpace(grid);
+    // });
+    const starMap = drawSpace(grid);
+    if (starMap) setStarMap(starMap);
+  }
+
+  useEffect(() => {
+    if (!grid) return;
+    const ctx = canvasRef.current?.getContext('2d');
+    if (!ctx) return;
+
+    if (!starMap) return;
+
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-    if (displayGrid)
+    if (drawSettingsState.displayGrid)
       requestAnimationFrame(() => {
         drawGrid(grid, ctx);
       });
-    requestAnimationFrame(() => {
-      drawSpace(grid, ctx);
-    });
-  }
+    drawAll(ctx, grid, grid[0][0].size, starMap, drawSettingsState);
+  }, [drawSettingsState, grid, starMap]);
 
   useEffect(() => {
     render(grid);
@@ -85,6 +134,8 @@ export default function SpaceBackground() {
   useEffect(() => {
     // add r key listener
     const keyDownHandler = (e: KeyboardEvent) => {
+      // check that no elements are in focus
+      if (document.activeElement !== document.body) return;
       if (e.key === 'r') {
         rerender();
       }
@@ -107,14 +158,14 @@ export default function SpaceBackground() {
       const devDivHeight = devDivBounds.height;
       const devDivWidth = devDivBounds.width;
       if (
-        e.clientX > devDivCenterX - devDivWidth / 1.3 &&
-        e.clientX < devDivCenterX + devDivWidth / 1.3 &&
-        e.clientY > devDivCenterY - devDivHeight / 1.5 &&
-        e.clientY < devDivCenterY + devDivHeight / 1.5
+        e.clientX > devDivCenterX - devDivWidth / 1.5 &&
+        e.clientX < devDivCenterX + devDivWidth / 1.5 &&
+        e.clientY > devDivCenterY - devDivHeight / 1.7 &&
+        e.clientY < devDivCenterY + devDivHeight / 1.7
       ) {
         devDiv.style.right = '1em';
       } else {
-        devDiv.style.right = '-9.5em';
+        devDiv.style.right = '-14.5em';
       }
     };
 
@@ -125,16 +176,73 @@ export default function SpaceBackground() {
   }, []);
 
   return (
-    <>
+    <div
+      style={{
+        width: '100vw',
+        height: '100vh',
+        position: 'relative',
+        overflow: 'hidden',
+      }}
+    >
       <DevDiv ref={devDivRef}>
         <span>
           <button onClick={rerender}>Rerender</button> [R]
         </span>
         <Link href="/play">Play</Link>
-        <label>Settings</label>
+        <h3>Settings</h3>
+        {renderedSettings(drawSettingsState, setDrawSettingsState)}
       </DevDiv>
       <BackCanvas ref={canvasRef} />
-    </>
+    </div>
+  );
+}
+
+function renderedSettings(
+  settingsState: DrawSettings,
+  setSettingsState: React.Dispatch<React.SetStateAction<DrawSettings>>,
+) {
+  return (
+    <SettingsSection>
+      {Object.entries(settingsState).map(([key, value]) => {
+        return (
+          <label key={key}>
+            {key.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase())}{' '}
+            <input
+              {...(typeof value === 'boolean'
+                ? { checked: value }
+                : {
+                    value: value,
+                  })}
+              {...(typeof value === 'number' && {
+                // min: setting.min || 0,
+                // max: setting.max || 100,
+                step: 0.1,
+              })}
+              type={
+                typeof value === 'boolean'
+                  ? 'checkbox'
+                  : typeof value === 'number'
+                  ? 'range'
+                  : 'text'
+              }
+              onChange={(e) =>
+                setSettingsState((prev) => {
+                  return {
+                    ...prev,
+                    [key as keyof DrawSettings]:
+                      typeof prev[key as keyof DrawSettings] === 'boolean'
+                        ? e.target.checked
+                        : typeof prev[key as keyof DrawSettings] === 'number'
+                        ? e.target.valueAsNumber
+                        : e.target.value,
+                  };
+                })
+              }
+            />
+          </label>
+        );
+      })}
+    </SettingsSection>
   );
 }
 

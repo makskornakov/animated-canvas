@@ -2,12 +2,12 @@ import styled from 'styled-components';
 
 export const DevDiv = styled.div`
   position: absolute;
-  width: 10em;
-  top: 1em;
+  width: 15em;
+  top: 2em;
   /* height:  */
   gap: 0.75em;
   padding: 1em 0;
-  right: -9.5em;
+  right: -14.5em;
   box-sizing: border-box;
   z-index: 2;
   display: flex;
@@ -19,12 +19,13 @@ export const DevDiv = styled.div`
   transition: right 0.4s ease-in-out;
 
   color: #090909;
-  background: rgba(200, 200, 200, 0.8);
+  background: rgba(200, 200, 200, 0.92);
 
   a {
     padding: 0;
     margin: 0;
-    color: blue;
+    font-weight: 400;
+    color: #090909;
     transition: color 0.2s;
 
     &:hover {
@@ -57,6 +58,33 @@ export const DevDiv = styled.div`
       transition-duration: 0.1s;
       background: #8bf125;
     }
+  }
+`;
+
+export const SettingsSection = styled.div`
+  width: 90%;
+  margin-top: 0.5em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1em;
+
+  label {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    font-size: 0.9rem;
+    column-gap: 0.75em;
+    row-gap: 0.25em;
+    width: 100%;
+  }
+  /* type text */
+  input[type='text'] {
+    width: 90%;
+    outline: none;
+    border: 1px solid grey;
+    border-radius: 0.25em;
+    padding: 0.25em;
   }
 `;
 

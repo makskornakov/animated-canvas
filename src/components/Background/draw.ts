@@ -1,16 +1,16 @@
 import {
-  Coordinate,
+  // Coordinate,
   Grid,
-  coreColor,
-  displayNextSize,
-  displayStarCore,
-  growStep,
-  starAreaColor,
+  // coreColor,
+  // displayNextSize,
+  // displayStarCore,
+  // growStep,
+  // starAreaColor,
 } from './SpaceBackground';
-import { Area, StarGridFull } from './render';
+import type { Area, StarGridFull } from './SpaceBackground';
 
 export function drawGrid(grid: Grid, ctx: CanvasRenderingContext2D) {
-  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+  // ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
   console.log('drawGrid');
 
   ctx.strokeStyle = 'lightgray';
@@ -33,18 +33,18 @@ export function drawGrid(grid: Grid, ctx: CanvasRenderingContext2D) {
 export function drawSurroundings(
   squares: Map<string, Area>,
   ctx: CanvasRenderingContext2D,
-  cell: Coordinate,
+  cellSize: number,
 ) {
   squares.forEach((some) => {
     if (!some) return;
     const quadrant = {
-      x1: some.cords.x1 - cell.size / 2,
-      x2: some.cords.x2 + cell.size / 2,
-      y1: some.cords.y1 - cell.size / 2,
-      y2: some.cords.y2 + cell.size / 2,
+      x1: some.cords.x1 - cellSize / 2,
+      x2: some.cords.x2 + cellSize / 2,
+      y1: some.cords.y1 - cellSize / 2,
+      y2: some.cords.y2 + cellSize / 2,
     };
 
-    ctx.font = `${cell.size}px Helvetica, Arial, sans-serif`;
+    ctx.font = `${cellSize}px Helvetica, Arial, sans-serif`;
     ctx.fillStyle = `rgba(0, 255, 255, 0.6)`;
     ctx.textBaseline = 'middle';
     ctx.textAlign = 'center';
@@ -65,22 +65,22 @@ export function drawSurroundings(
       const x = i % 2 ? some.cords.x2 : some.cords.x1;
       const y = i < 2 ? some.cords.y1 : some.cords.y2;
 
-      ctx.font = ` ${cell.size / 1.5}px Helvetica, Arial, sans-serif`;
+      ctx.font = ` ${cellSize / 1.5}px Helvetica, Arial, sans-serif`;
       ctx.textBaseline = 'middle';
       ctx.textAlign = 'center';
 
-      const fontX = x + (i % 2 ? cell.size / 2.5 : -cell.size / 2.5);
-      const fontY = y + (i < 2 ? -cell.size / 2.5 : cell.size / 2.5);
+      const fontX = x + (i % 2 ? cellSize / 2.5 : -cellSize / 2.5);
+      const fontY = y + (i < 2 ? -cellSize / 2.5 : cellSize / 2.5);
 
       ctx.fillText(symbols[i], fontX, fontY);
     }
   });
 }
 
-export function drawBoom(ctx: CanvasRenderingContext2D, cell: Coordinate) {
+export function drawBoom(ctx: CanvasRenderingContext2D, x: number, y: number, size: number) {
   ctx.globalCompositeOperation = 'destination-over';
   ctx.beginPath();
-  ctx.arc(cell.x, cell.y, cell.size, 0, 2 * Math.PI);
+  ctx.arc(x, y, size, 0, 2 * Math.PI);
   ctx.fillStyle = `rgba(255, 0, 0, 0.4)`;
   ctx.fill();
   ctx.closePath();
@@ -89,8 +89,13 @@ export function drawBoom(ctx: CanvasRenderingContext2D, cell: Coordinate) {
 export function drawStars(
   starGridWithSize: StarGridFull[],
   ctx: CanvasRenderingContext2D,
-  cell: Coordinate,
+  cellSize: number,
   grid: Grid,
+  starAreaColor: string,
+  displayStarCore: boolean,
+  coreColor: string,
+  displayNextSize: boolean,
+  growStep: number,
 ) {
   starGridWithSize.forEach((point, i) => {
     // draw circle
@@ -101,7 +106,7 @@ export function drawStars(
     ctx.globalCompositeOperation = 'destination-over';
     ctx.fillStyle = point.completed ? starAreaColor : 'rgba(255, 0, 0, 0.5)';
     ctx.beginPath();
-    ctx.arc(cords.x, cords.y, size.star * cell.size + cell.size / 2, 0, 2 * Math.PI);
+    ctx.arc(cords.x, cords.y, size.star * cellSize + cellSize / 2, 0, 2 * Math.PI);
     ctx.fill();
     ctx.closePath();
     ctx.globalCompositeOperation = 'source-over';
@@ -110,17 +115,17 @@ export function drawStars(
     if (displayStarCore) {
       ctx.fillStyle = coreColor;
       ctx.beginPath();
-      ctx.arc(cords.x, cords.y, cell.size / 5, 0, 2 * Math.PI);
+      ctx.arc(cords.x, cords.y, cellSize / 5, 0, 2 * Math.PI);
       ctx.fill();
       ctx.closePath();
     }
 
     if (displayNextSize) {
-      ctx.setLineDash([cell.size / 4, cell.size / 4]);
+      ctx.setLineDash([cellSize / 4, cellSize / 4]);
       ctx.strokeStyle = 'red';
       ctx.lineWidth = 2;
       ctx.beginPath();
-      ctx.arc(cords.x, cords.y, (size.star + growStep) * cell.size + cell.size / 2, 0, 2 * Math.PI);
+      ctx.arc(cords.x, cords.y, (size.star + growStep) * cellSize + cellSize / 2, 0, 2 * Math.PI);
       ctx.stroke();
       ctx.closePath();
       ctx.setLineDash([]);

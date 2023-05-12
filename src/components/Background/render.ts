@@ -1,35 +1,14 @@
-import {
+import { growStep, maxDistanceBetweenStars, wallsExist } from './SpaceBackground';
+import type {
+  RenderedStarMap,
+  Point,
   Grid,
-  displaySurroundings,
-  growStep,
-  maxDistanceBetweenStars,
-  wallsExist,
+  Area,
+  DrawSettings,
+  Surroundings,
+  StarGridFull,
 } from './SpaceBackground';
 import { drawBoom, drawStars, drawSurroundings } from './draw';
-
-export interface Area {
-  cords: {
-    x1: number;
-    x2: number;
-    y1: number;
-    y2: number;
-  };
-  cells: number;
-}
-
-type Point = {
-  x: number;
-  y: number;
-};
-export interface StarGridFull extends Point {
-  size: {
-    wall: number;
-    star: number;
-  };
-  completed: boolean;
-}
-
-type Surroundings = { [key: string]: [Point, Point] | false };
 
 function getSurroundings(grid: Grid, boomX: number, boomY: number): Surroundings {
   return {
@@ -80,15 +59,13 @@ function getSurroundings(grid: Grid, boomX: number, boomY: number): Surroundings
   };
 }
 
-export function drawSpace(grid: Grid, ctx: CanvasRenderingContext2D) {
-  if (!grid.length) return;
-  console.log('drawing space');
+export function drawSpace(grid: Grid): RenderedStarMap | false {
+  if (!grid.length) return false;
+  console.log('render space');
 
   const boomX = Math.floor(Math.random() * grid.length);
   const boomY = Math.floor(Math.random() * grid[0].length);
   const cell = grid[boomX][boomY];
-
-  if (displaySurroundings) drawBoom(ctx, cell);
 
   const surroundings = getSurroundings(grid, boomX, boomY);
   const squares: Map<string, Area> = new Map();
@@ -116,7 +93,6 @@ export function drawSpace(grid: Grid, ctx: CanvasRenderingContext2D) {
   });
 
   // in the middle of teach area write its area
-  if (displaySurroundings) drawSurroundings(squares, ctx, cell);
 
   // * Consoles
   // console.log(stars);
@@ -216,6 +192,36 @@ export function drawSpace(grid: Grid, ctx: CanvasRenderingContext2D) {
       }
     });
   }
+  return { starGridWithSize, squares, boomX, boomY };
+}
 
-  drawStars(starGridWithSize, ctx, cell, grid);
+export function drawAll(
+  ctx: CanvasRenderingContext2D,
+  grid: Grid,
+  cellSize: number,
+  starMap: RenderedStarMap,
+  settings: DrawSettings,
+) {
+  console.log('draw space');
+
+  const { starGridWithSize, squares, boomX, boomY } = starMap;
+  const { displaySurroundings, starAreaColor, displayStarCore, coreColor, displayNextSize } =
+    settings;
+
+  const { x, y } = grid[boomX][boomY];
+  if (displaySurroundings) drawBoom(ctx, x, y, cellSize);
+
+  if (displaySurroundings) drawSurroundings(squares, ctx, cellSize);
+
+  drawStars(
+    starGridWithSize,
+    ctx,
+    cellSize,
+    grid,
+    starAreaColor,
+    displayStarCore,
+    coreColor,
+    displayNextSize,
+    growStep,
+  );
 }
