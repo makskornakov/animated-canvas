@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react';
 
 import { SettingsSection } from './Back.styled';
+import { GenerationSettings } from './SpaceBackground';
 
 function useInternalReverseDebouncedState<T>(
   state: T,
@@ -30,19 +31,29 @@ export default function RenderedRenderSettings({
   setNetSize,
   generationSettings,
   setGenerationSettings,
+  baseGenerationSettings,
+  baseNetSize,
 }: {
   netSize: number;
   setNetSize: React.Dispatch<React.SetStateAction<number>>;
-  generationSettings: any; // TODO! remove any
-  setGenerationSettings: React.Dispatch<React.SetStateAction<any>>;
+  generationSettings: GenerationSettings;
+  setGenerationSettings: React.Dispatch<React.SetStateAction<GenerationSettings>>;
+  baseGenerationSettings: GenerationSettings;
+  baseNetSize: number;
 }) {
   const debounceTimeout = 180;
 
   const [internalGenerationSettings, setInternalGenerationSettings] =
     useInternalReverseDebouncedState(generationSettings, setGenerationSettings, debounceTimeout);
 
+  const [internalNetSize, setInternalNetSize] = useInternalReverseDebouncedState(
+    netSize,
+    setNetSize,
+    debounceTimeout,
+  );
+
   const updateSettings = useCallback(
-    (key: string, value: any) => {
+    (key: keyof GenerationSettings, value: any) => {
       setInternalGenerationSettings((prev: any) => ({
         ...prev,
         [key]: value,
@@ -51,22 +62,30 @@ export default function RenderedRenderSettings({
     [setInternalGenerationSettings],
   );
 
-  const [internalNetSize, setInternalNetSize] = useInternalReverseDebouncedState(
-    netSize,
-    setNetSize,
-    debounceTimeout,
+  const resetSettings = useCallback(
+    (key: keyof GenerationSettings | 'netSize') => {
+      if (key === 'netSize') {
+        setInternalNetSize(baseNetSize);
+      } else
+        setInternalGenerationSettings((prev: any) => {
+          if (prev[key] === baseGenerationSettings[key]) return prev;
+          return {
+            ...prev,
+            [key]: baseGenerationSettings[key],
+          };
+        });
+    },
+    [baseGenerationSettings, baseNetSize, setInternalGenerationSettings, setInternalNetSize],
   );
 
   return (
     <SettingsSection>
       <label
         onDoubleClick={() => {
-          if (internalNetSize === 30) return;
-          setNetSize(30);
+          resetSettings('netSize');
         }}
       >
         Net size: {internalNetSize}
-        {/* uses a lot of resources */}
         <h5 style={internalNetSize < 10 ? { color: 'red' } : {}}>
           Smaller net is resource intensive
         </h5>
@@ -81,14 +100,30 @@ export default function RenderedRenderSettings({
           }}
         />
       </label>
-
+      <RenderOtherGenerationSettings
+        {...{
+          internalGenerationSettings,
+          updateSettings,
+          resetSettings,
+        }}
+      />
+    </SettingsSection>
+  );
+}
+function RenderOtherGenerationSettings({
+  internalGenerationSettings,
+  updateSettings,
+  resetSettings,
+}: {
+  internalGenerationSettings: GenerationSettings;
+  updateSettings: (key: keyof GenerationSettings, value: any) => void;
+  resetSettings: (key: keyof GenerationSettings) => void;
+}) {
+  return (
+    <>
       <label
         onDoubleClick={() => {
-          if (internalGenerationSettings.maxDistanceBetweenStars === 0) return;
-          setGenerationSettings({
-            ...internalGenerationSettings,
-            maxDistanceBetweenStars: 0,
-          });
+          resetSettings('maxDistanceBetweenStars');
         }}
       >
         Max star distance: {internalGenerationSettings.maxDistanceBetweenStars}
@@ -106,11 +141,7 @@ export default function RenderedRenderSettings({
       </label>
       <label
         onDoubleClick={() => {
-          if (internalGenerationSettings.growStep === 0.1) return;
-          setGenerationSettings({
-            ...internalGenerationSettings,
-            growStep: 1,
-          });
+          resetSettings('growStep');
         }}
       >
         Grow step: {internalGenerationSettings.growStep}
@@ -136,14 +167,10 @@ export default function RenderedRenderSettings({
           checked={internalGenerationSettings.wallsExist}
           onChange={(e) => {
             updateSettings('wallsExist', e.target.checked);
-            // setGenerationSettings({
-            //   ...internalGenerationSettings,
-            //   wallsExist: e.target.checked,
-            // });
           }}
         />
         <h5>Allow growing over the walls</h5>
       </label>
-    </SettingsSection>
+    </>
   );
 }

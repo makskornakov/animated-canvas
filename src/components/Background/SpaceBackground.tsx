@@ -16,8 +16,15 @@ const baseDrawSettings = {
   displaySurroundings: false,
   displayGrid: false,
 };
+const baseGenerationSettings = {
+  maxDistanceBetweenStars: 0, // * EX: -1 - overlap, 0 - touching, 1 - gap
+  growStep: 1, // * EX: 0.1 - precise, 0.5 - fast, 1 - very fast (cell size)
+  wallsExist: true,
+};
+const baseNetSize = 30; // * EX: 10 - small, 40 - medium, 100 - large
 
 export type DrawSettings = typeof baseDrawSettings;
+export type GenerationSettings = typeof baseGenerationSettings;
 
 export default function SpaceBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -28,12 +35,9 @@ export default function SpaceBackground() {
   const [drawSettingsState, setDrawSettingsState] = useState<DrawSettings>(baseDrawSettings);
 
   //* render settings
-  const [netSize, setNetSize] = useState(30); // * EX: 10 - small, 40 - medium, 100 - large
-  const [generationSettings, setGenerationSettings] = useState({
-    maxDistanceBetweenStars: 0, // * EX: -1 - overlap, 0 - touching, 1 - gap
-    growStep: 1, // * EX: 0.1 - precise, 0.5 - fast, 1 - very fast (cell size)
-    wallsExist: true,
-  });
+  const [netSize, setNetSize] = useState(baseNetSize);
+  const [generationSettings, setGenerationSettings] =
+    useState<GenerationSettings>(baseGenerationSettings);
 
   const resize = useCallback(() => {
     const canvas = canvasRef.current;
@@ -181,6 +185,8 @@ export default function SpaceBackground() {
             setNetSize,
             generationSettings,
             setGenerationSettings,
+            baseGenerationSettings,
+            baseNetSize,
           }}
         />
       </DevDiv>
