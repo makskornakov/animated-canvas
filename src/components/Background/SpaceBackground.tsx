@@ -214,7 +214,12 @@ export default function SpaceBackground() {
           <button onClick={render}>Rerender</button> [R]
         </span>
         <SettingsSection>
-          <label>
+          <label
+            onDoubleClick={() => {
+              if (netSize === 30) return;
+              setNetSize(30);
+            }}
+          >
             Net size: {netSize}
             {/* uses a lot of resources */}
             <h5 style={netSize < 10 ? { color: 'red' } : {}}>Smaller net is resource intensive</h5>
@@ -229,7 +234,15 @@ export default function SpaceBackground() {
               }}
             />
           </label>
-          <label>
+          <label
+            onDoubleClick={() => {
+              if (generationSettings.maxDistanceBetweenStars === 0) return;
+              setGenerationSettings({
+                ...generationSettings,
+                maxDistanceBetweenStars: 0,
+              });
+            }}
+          >
             Max star distance: {generationSettings.maxDistanceBetweenStars}
             <h5>Negative - overlap | Positive - space</h5>
             <input
@@ -246,7 +259,15 @@ export default function SpaceBackground() {
               }}
             />
           </label>
-          <label>
+          <label
+            onDoubleClick={() => {
+              if (generationSettings.growStep === 1) return;
+              setGenerationSettings({
+                ...generationSettings,
+                growStep: 1,
+              });
+            }}
+          >
             Grow step: {generationSettings.growStep}
             <h5>Smaller step is more precise</h5>
             <h5 style={generationSettings.growStep < 0.5 ? { color: 'red' } : {}}>
