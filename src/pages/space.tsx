@@ -1,4 +1,5 @@
-import SpaceBackground from '@/components/Background/SpaceBackground';
+import SpacePlayground from '@/components/Background/SpacePlayground';
+// import SpaceBackground from '@/components/Background/SpacePlayground';
 import Head from 'next/head';
 
 export default function Home() {
@@ -9,7 +10,7 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="description" content="Space Playground" />
       </Head>
-      <SpaceBackground />
+      <SpacePlayground />
     </>
   );
 }

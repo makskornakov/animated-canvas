@@ -1,4 +1,4 @@
-import { DrawSettings } from './SpaceBackground';
+import { DrawSettings } from './SpacePlayground';
 import type { Area, Grid, StarGridFull } from './types';
 
 export function drawGrid(grid: Grid, ctx: CanvasRenderingContext2D) {
@@ -86,17 +86,16 @@ export function drawStars(
   growStep: number,
   settings: DrawSettings,
 ) {
+  const { displayStarArea, displayStarCore, coreColor, starAreaColor, displayNextSize } = settings;
+  if (!displayStarArea && !displayStarCore && !displayNextSize) return;
   starGridWithSize.forEach((point, i) => {
-    // draw circle
     const { x, y, size } = point;
     const cords = grid[x][y];
-    const { displayStarArea, displayStarCore, coreColor, starAreaColor, displayNextSize } =
-      settings;
 
-    // fill the min circle
     if (displayStarArea) {
       ctx.globalCompositeOperation = 'destination-over';
-      ctx.fillStyle = point.completed ? starAreaColor : 'rgba(255, 0, 0, 0.5)';
+
+      ctx.fillStyle = point.completed ? starAreaColor + '80' : 'rgba(255, 0, 0, 0.5)';
       ctx.beginPath();
       ctx.arc(cords.x, cords.y, size.star * cellSize + cellSize / 2, 0, 2 * Math.PI);
       ctx.fill();

@@ -1,5 +1,5 @@
 // import { growStep, maxDistanceBetweenStars, wallsExist } from './SpaceBackground';
-import type { DrawSettings } from './SpaceBackground';
+import type { DrawSettings } from './SpacePlayground';
 import { drawBoom, drawStars, drawSurroundings } from './draw';
 import type { Grid, Surroundings, RenderedStarMap, Area, Point, StarGridFull } from './types';
 

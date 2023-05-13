@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 
 import { SettingsSection } from './Back.styled';
-import { GenerationSettings } from './SpaceBackground';
+import { GenerationSettings } from './SpacePlayground';
 
 function useInternalReverseDebouncedState<T>(
   state: T,
