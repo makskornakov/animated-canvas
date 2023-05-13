@@ -1,13 +1,4 @@
-import {
-  // Coordinate,
-  Grid,
-  // coreColor,
-  // displayNextSize,
-  // displayStarCore,
-  // growStep,
-  // starAreaColor,
-} from './SpaceBackground';
-import type { Area, StarGridFull } from './SpaceBackground';
+import type { Area, Grid, StarGridFull } from './types';
 
 export function drawGrid(grid: Grid, ctx: CanvasRenderingContext2D) {
   // ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);

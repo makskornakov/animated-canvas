@@ -1,14 +1,26 @@
 // import { growStep, maxDistanceBetweenStars, wallsExist } from './SpaceBackground';
-import type {
-  RenderedStarMap,
-  Point,
-  Grid,
-  Area,
-  DrawSettings,
-  Surroundings,
-  StarGridFull,
-} from './SpaceBackground';
+import type { DrawSettings } from './SpaceBackground';
 import { drawBoom, drawStars, drawSurroundings } from './draw';
+import type { Grid, Surroundings, RenderedStarMap, Area, Point, StarGridFull } from './types';
+
+export function getGrid(cellSize: number, width: number, height: number) {
+  const grid = [] as Grid;
+  const squaresInWidth = Math.floor(width / cellSize);
+  const squaresInHeight = Math.floor(height / cellSize);
+
+  for (let i = 0; i < squaresInWidth; i++) {
+    grid[i] = [];
+    for (let j = 0; j < squaresInHeight; j++) {
+      grid[i][j] = {
+        x: i * cellSize + cellSize / 2 + Math.floor((width - cellSize * squaresInWidth) / 2),
+        y: j * cellSize + cellSize / 2 + Math.floor((height - cellSize * squaresInHeight) / 2),
+        size: cellSize,
+      };
+    }
+  }
+
+  return grid;
+}
 
 function getSurroundings(grid: Grid, boomX: number, boomY: number): Surroundings {
   return {

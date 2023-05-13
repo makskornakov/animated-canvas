@@ -1,57 +1,23 @@
-import { useRef, useEffect, useCallback, useState, SetStateAction } from 'react';
-import { drawAll, drawSpace } from './render';
+import { useRef, useEffect, useCallback, useState } from 'react';
+import { drawAll, drawSpace, getGrid } from './render';
 import { drawGrid } from './draw';
 import { BackCanvas, DevDiv, SettingsSection } from './Back.styled';
+import type { Grid, RenderedStarMap } from './types';
 import Link from 'next/link';
 
 // * Settings
 const drawSettings = {
   starAreaColor: 'rgba(0, 255, 255, 0.5)',
-  displayStarCore: false,
+  displayStarCore: true,
   coreColor: 'rgba(255, 255, 255, 1)',
-  displayNextSize: true,
-  displaySurroundings: true,
-  displayGrid: true,
+  displayNextSize: false,
+  displaySurroundings: false,
+  displayGrid: false,
 };
 
 export type DrawSettings = typeof drawSettings;
 
 // * Types
-export interface Area {
-  cords: {
-    x1: number;
-    x2: number;
-    y1: number;
-    y2: number;
-  };
-  cells: number;
-}
-
-export type Point = {
-  x: number;
-  y: number;
-};
-export interface StarGridFull extends Point {
-  size: {
-    wall: number;
-    star: number;
-  };
-  completed: boolean;
-}
-export type RenderedStarMap = {
-  starGridWithSize: StarGridFull[];
-  squares: Map<string, Area>;
-  boomX: number;
-  boomY: number;
-};
-export type Surroundings = { [key: string]: [Point, Point] | false };
-
-export type Coordinate = {
-  x: number;
-  y: number;
-  size: number;
-};
-export type Grid = Coordinate[][];
 
 export default function SpaceBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -161,13 +127,13 @@ export default function SpaceBackground() {
       const devDivCenterX = devDivBounds.left + devDivBounds.width / 2;
       const devDivCenterY = devDivBounds.top + devDivBounds.height / 2;
 
-      const devDivHeight = devDivBounds.height;
-      const devDivWidth = devDivBounds.width;
+      const triggerWidthArea = devDivBounds.width / 2 + devDivBounds.width / 6;
+      const triggerHeightArea = devDivBounds.height / 2 + devDivBounds.height / 20;
       if (
-        e.clientX > devDivCenterX - devDivWidth / 1.5 &&
-        e.clientX < devDivCenterX + devDivWidth / 1.5 &&
-        e.clientY > devDivCenterY - devDivHeight / 1.7 &&
-        e.clientY < devDivCenterY + devDivHeight / 1.7
+        e.clientX > devDivCenterX - triggerWidthArea &&
+        e.clientX < devDivCenterX + triggerWidthArea &&
+        e.clientY > devDivCenterY - triggerHeightArea &&
+        e.clientY < devDivCenterY + triggerHeightArea
       ) {
         if (right) div.style.right = '1em';
         else div.style.left = '1em';
@@ -329,16 +295,11 @@ function renderedSettings(
                 : {
                     value: value,
                   })}
-              {...(typeof value === 'number' && {
-                // min: setting.min || 0,
-                // max: setting.max || 100,
-                step: 0.1,
-              })}
               type={
                 typeof value === 'boolean'
                   ? 'checkbox'
                   : typeof value === 'number'
-                  ? 'range'
+                  ? 'number'
                   : 'text'
               }
               onChange={(e) =>
@@ -363,22 +324,3 @@ function renderedSettings(
 }
 
 // Define an array of available colors to choose from
-
-function getGrid(cellSize: number, width: number, height: number) {
-  const grid = [] as Grid;
-  const squaresInWidth = Math.floor(width / cellSize);
-  const squaresInHeight = Math.floor(height / cellSize);
-
-  for (let i = 0; i < squaresInWidth; i++) {
-    grid[i] = [];
-    for (let j = 0; j < squaresInHeight; j++) {
-      grid[i][j] = {
-        x: i * cellSize + cellSize / 2 + Math.floor((width - cellSize * squaresInWidth) / 2),
-        y: j * cellSize + cellSize / 2 + Math.floor((height - cellSize * squaresInHeight) / 2),
-        size: cellSize,
-      };
-    }
-  }
-
-  return grid;
-}
