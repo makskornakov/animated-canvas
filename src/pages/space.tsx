@@ -1,15 +1,15 @@
-import Landing from '@/components/Landing';
+import SpaceBackground from '@/components/Background/SpaceBackground';
 import Head from 'next/head';
 
 export default function Home() {
   return (
     <>
       <Head>
-        <title>Canvas Playground</title>
+        <title>Space Playground</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="description" content="Canvas Playground" />
+        <meta name="description" content="Space Playground" />
       </Head>
-      <Landing />
+      <SpaceBackground />
     </>
   );
 }
