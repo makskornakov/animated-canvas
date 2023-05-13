@@ -1,12 +1,14 @@
-import { useRef, useEffect, useCallback, useState } from 'react';
-import { drawAll, drawSpace, getGrid } from './render';
+import { useRef, useEffect, useCallback, useState, useTransition } from 'react';
+import { drawAll, generateSpace, getGrid } from './render';
 import { drawGrid } from './draw';
 import { BackCanvas, DevDiv, SettingsSection } from './Back.styled';
 import type { Grid, RenderedStarMap } from './types';
 import Link from 'next/link';
+import RenderedRenderSettings from './RenderSettings';
+import { useEventCallback, useEventListener } from 'usehooks-ts';
 
 // * Settings
-const drawSettings = {
+const baseDrawSettings = {
   starAreaColor: 'rgba(0, 255, 255, 0.5)',
   displayStarCore: true,
   coreColor: 'rgba(255, 255, 255, 1)',
@@ -15,9 +17,7 @@ const drawSettings = {
   displayGrid: false,
 };
 
-export type DrawSettings = typeof drawSettings;
-
-// * Types
+export type DrawSettings = typeof baseDrawSettings;
 
 export default function SpaceBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -25,7 +25,7 @@ export default function SpaceBackground() {
   const devDiv2Ref = useRef<HTMLDivElement>(null);
   const [grid, setGrid] = useState<Grid | null>(null);
   const [starMap, setStarMap] = useState<RenderedStarMap | null>(null);
-  const [drawSettingsState, setDrawSettingsState] = useState<DrawSettings>(drawSettings);
+  const [drawSettingsState, setDrawSettingsState] = useState<DrawSettings>(baseDrawSettings);
 
   //* render settings
   const [netSize, setNetSize] = useState(30); // * EX: 10 - small, 40 - medium, 100 - large
@@ -51,7 +51,6 @@ export default function SpaceBackground() {
     canvas.width = width;
     canvas.height = height;
 
-    // generate grid
     const grid = getGrid(netSize * dpr, width, height);
     setGrid(grid);
   }, [netSize]);
@@ -69,7 +68,7 @@ export default function SpaceBackground() {
     if (!grid) return;
     setStarMap(null);
     const { wallsExist, growStep, maxDistanceBetweenStars } = generationSettings;
-    const newStarMap = drawSpace(grid, wallsExist, growStep, maxDistanceBetweenStars);
+    const newStarMap = generateSpace(grid, wallsExist, growStep, maxDistanceBetweenStars);
     if (newStarMap) setStarMap(newStarMap);
   }, [grid, generationSettings]);
 
@@ -102,20 +101,17 @@ export default function SpaceBackground() {
   }, [render]);
 
   // ? Press r to rerender
-  useEffect(() => {
-    // add r key listener
-    const keyDownHandler = (e: KeyboardEvent) => {
-      // check that no elements are in focus
+  const keydownCallback = useCallback(
+    (event: KeyboardEvent) => {
       if (document.activeElement !== document.body) return;
-      if (e.key === 'r') {
+      if (event.key === 'r') {
         rerender();
       }
-    };
-    window.addEventListener('keydown', keyDownHandler);
-    return () => {
-      window.removeEventListener('keydown', keyDownHandler);
-    };
-  }, [rerender]);
+    },
+    [rerender],
+  );
+
+  useEventListener('keydown', keydownCallback);
 
   useEffect(() => {
     const devDiv = devDivRef.current;
@@ -179,110 +175,34 @@ export default function SpaceBackground() {
         <span>
           <button onClick={render}>Rerender</button> [R]
         </span>
-        <SettingsSection>
-          <label
-            onDoubleClick={() => {
-              if (netSize === 30) return;
-              setNetSize(30);
-            }}
-          >
-            Net size: {netSize}
-            {/* uses a lot of resources */}
-            <h5 style={netSize < 10 ? { color: 'red' } : {}}>Smaller net is resource intensive</h5>
-            <input
-              type="range"
-              min="1"
-              step={1}
-              max="100"
-              value={netSize}
-              onChange={(e) => {
-                setNetSize(+e.target.value);
-              }}
-            />
-          </label>
-          <label
-            onDoubleClick={() => {
-              if (generationSettings.maxDistanceBetweenStars === 0) return;
-              setGenerationSettings({
-                ...generationSettings,
-                maxDistanceBetweenStars: 0,
-              });
-            }}
-          >
-            Max star distance: {generationSettings.maxDistanceBetweenStars}
-            <h5>Negative - overlap | Positive - space</h5>
-            <input
-              type="range"
-              min="-10"
-              step={0.1}
-              max="10"
-              value={generationSettings.maxDistanceBetweenStars}
-              onChange={(e) => {
-                setGenerationSettings({
-                  ...generationSettings,
-                  maxDistanceBetweenStars: +e.target.value,
-                });
-              }}
-            />
-          </label>
-          <label
-            onDoubleClick={() => {
-              if (generationSettings.growStep === 1) return;
-              setGenerationSettings({
-                ...generationSettings,
-                growStep: 1,
-              });
-            }}
-          >
-            Grow step: {generationSettings.growStep}
-            <h5>Smaller step is more precise</h5>
-            <h5 style={generationSettings.growStep < 0.5 ? { color: 'red' } : {}}>
-              Smaller step is resource intensive
-            </h5>
-            <input
-              type="range"
-              min="0.1"
-              step={0.01}
-              max="5"
-              value={generationSettings.growStep}
-              onChange={(e) => {
-                setGenerationSettings({
-                  ...generationSettings,
-                  growStep: +e.target.value,
-                });
-              }}
-            />
-          </label>
-          <label>
-            Walls exist:
-            <input
-              type="checkbox"
-              checked={generationSettings.wallsExist}
-              onChange={(e) => {
-                setGenerationSettings({
-                  ...generationSettings,
-                  wallsExist: e.target.checked,
-                });
-              }}
-            />
-            <h5>Allow growing over the walls</h5>
-          </label>
-        </SettingsSection>
+        <RenderedRenderSettings
+          {...{
+            netSize,
+            setNetSize,
+            generationSettings,
+            setGenerationSettings,
+          }}
+        />
       </DevDiv>
       <DevDiv ref={devDivRef} right>
         {/* <Link href="/play">Play</Link> */}
         <h3>Visual Settings</h3>
-        {renderedSettings(drawSettingsState, setDrawSettingsState)}
+        <RenderedSettings
+          {...{ settingsState: drawSettingsState, setSettingsState: setDrawSettingsState }}
+        />
       </DevDiv>
       <BackCanvas ref={canvasRef} />
     </div>
   );
 }
 
-function renderedSettings(
-  settingsState: DrawSettings,
-  setSettingsState: React.Dispatch<React.SetStateAction<DrawSettings>>,
-) {
+function RenderedSettings({
+  settingsState,
+  setSettingsState,
+}: {
+  settingsState: DrawSettings;
+  setSettingsState: React.Dispatch<React.SetStateAction<DrawSettings>>;
+}) {
   return (
     <SettingsSection>
       {Object.entries(settingsState).map(([key, value]) => {
@@ -322,5 +242,3 @@ function renderedSettings(
     </SettingsSection>
   );
 }
-
-// Define an array of available colors to choose from

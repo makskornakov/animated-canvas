@@ -71,7 +71,7 @@ function getSurroundings(grid: Grid, boomX: number, boomY: number): Surroundings
   };
 }
 
-export function drawSpace(
+export function generateSpace(
   grid: Grid,
   wallsExist: boolean,
   growStep: number,
