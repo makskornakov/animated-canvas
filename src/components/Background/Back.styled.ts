@@ -78,6 +78,7 @@ export const SettingsSection = styled.div`
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
+    align-items: center;
     font-size: 0.9rem;
     column-gap: 0.75em;
     row-gap: 0.25em;

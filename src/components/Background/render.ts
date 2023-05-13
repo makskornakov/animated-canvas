@@ -231,15 +231,5 @@ export function drawAll(
 
   if (displaySurroundings) drawSurroundings(squares, ctx, cellSize);
 
-  drawStars(
-    starGridWithSize,
-    ctx,
-    cellSize,
-    grid,
-    starAreaColor,
-    displayStarCore,
-    coreColor,
-    displayNextSize,
-    growStep,
-  );
+  drawStars(starGridWithSize, ctx, cellSize, grid, growStep, settings);
 }

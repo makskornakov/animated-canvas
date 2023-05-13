@@ -7,11 +7,15 @@ import Link from 'next/link';
 import RenderedRenderSettings from './RenderSettings';
 import { useEventCallback, useEventListener } from 'usehooks-ts';
 
+// hex color string type
+type HEX = `#${string}`;
+
 // * Settings
 const baseDrawSettings = {
-  starAreaColor: 'rgba(0, 255, 255, 0.5)',
+  displayStarArea: true,
+  starAreaColor: '#00FFFF' as HEX,
   displayStarCore: true,
-  coreColor: 'rgba(255, 255, 255, 1)',
+  coreColor: '#FFFFFF' as HEX,
   displayNextSize: false,
   displaySurroundings: false,
   displayGrid: false,
@@ -226,6 +230,8 @@ function RenderedSettings({
                   ? 'checkbox'
                   : typeof value === 'number'
                   ? 'number'
+                  : /^#([0-6A-F]{3}){1,2}$/i.test(value)
+                  ? 'color'
                   : 'text'
               }
               onChange={(e) =>

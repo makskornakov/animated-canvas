@@ -1,3 +1,4 @@
+import { DrawSettings } from './SpaceBackground';
 import type { Area, Grid, StarGridFull } from './types';
 
 export function drawGrid(grid: Grid, ctx: CanvasRenderingContext2D) {
@@ -82,25 +83,26 @@ export function drawStars(
   ctx: CanvasRenderingContext2D,
   cellSize: number,
   grid: Grid,
-  starAreaColor: string,
-  displayStarCore: boolean,
-  coreColor: string,
-  displayNextSize: boolean,
   growStep: number,
+  settings: DrawSettings,
 ) {
   starGridWithSize.forEach((point, i) => {
     // draw circle
     const { x, y, size } = point;
     const cords = grid[x][y];
+    const { displayStarArea, displayStarCore, coreColor, starAreaColor, displayNextSize } =
+      settings;
 
     // fill the min circle
-    ctx.globalCompositeOperation = 'destination-over';
-    ctx.fillStyle = point.completed ? starAreaColor : 'rgba(255, 0, 0, 0.5)';
-    ctx.beginPath();
-    ctx.arc(cords.x, cords.y, size.star * cellSize + cellSize / 2, 0, 2 * Math.PI);
-    ctx.fill();
-    ctx.closePath();
-    ctx.globalCompositeOperation = 'source-over';
+    if (displayStarArea) {
+      ctx.globalCompositeOperation = 'destination-over';
+      ctx.fillStyle = point.completed ? starAreaColor : 'rgba(255, 0, 0, 0.5)';
+      ctx.beginPath();
+      ctx.arc(cords.x, cords.y, size.star * cellSize + cellSize / 2, 0, 2 * Math.PI);
+      ctx.fill();
+      ctx.closePath();
+      ctx.globalCompositeOperation = 'source-over';
+    }
 
     // random color from color array
     if (displayStarCore) {
