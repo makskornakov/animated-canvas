@@ -230,7 +230,7 @@ function RenderedSettings({
                   ? 'checkbox'
                   : typeof value === 'number'
                   ? 'number'
-                  : /^#([0-6A-F]{3}){1,2}$/i.test(value)
+                  : /^#([0-7A-F]{3}){1,2}$/i.test(value)
                   ? 'color'
                   : 'text'
               }
