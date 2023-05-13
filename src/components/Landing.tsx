@@ -9,10 +9,10 @@ export default function Landing() {
         <div>
           <h2>Space Background Interactive Playground</h2>
           <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-            incididunt ut labore et dolore magna aliqua. Vitae congue eu consequat ac felis donec
-            et. Nulla pharetra diam sit amet nisl suscipit adipiscing. Viverra maecenas accumsan
-            lacus vel. Urna porttitor rhoncus dolor purus non enim praesent elementum.
+            Points are distributed on the canvas and then grown to their maximum size. From the
+            resultant map, images like space with stars, planets and galaxies, or some organic
+            visualisations can be created. Discover more by playing with generation and display
+            settings.
             <br />
             <Link href="">Read more</Link>
           </p>
@@ -22,24 +22,23 @@ export default function Landing() {
         <div>
           <h2>General Canvas Interactive Playground</h2>
           <p>
-            Ac odio tempor orci dapibus ultrices in iaculis. Senectus et netus et malesuada. Egestas
-            integer eget aliquet nibh praesent tristique magna sit. In hac habitasse platea dictumst
-            vestibulum. Viverra orci sagittis eu volutpat. Enim nulla aliquet porttitor lacus
-            luctus. Vestibulum morbi blandit cursus risus at. sed cras ornare arcu dui.
+            Debugging playground for canvas animations. Change settings without disturbing the tick
+            and see console.log(s) being called. Set the overlay helping canvas to visualize
+            settings better.
             <br />
             <Link href="">Read more</Link>
           </p>
 
-          <CustomLink href="/play">Play Canvas</CustomLink>
+          <CustomLink href="/play">Play Example</CustomLink>
         </div>
       </CentralContainer>
       <FooterContainer>
-        <h4>Some footer text</h4>
+        <h4>Play with Code</h4>
         <p>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
-          ut labore et dolore magna aliqua. Vitae congue eu consequat ac felis donec et. Nulla
-          pharetra diam sit amet nisl suscipit adipiscing. Viverra maecenas accumsan lacus vel. Urna
-          porttitor rhoncus dolor purus non enim praesent elementum.
+          Visit the <Link href="https://github.com/makskornakov/animated-canvas">GitHub repo</Link>{' '}
+          of the project. <br />
+          Adjust deeper settings and apply your own ideas for any needs. Feel free to share your
+          findings and creations.
         </p>
         <Link href="https://github.com/makskornakov" target="_blank">
           Makskornakov
