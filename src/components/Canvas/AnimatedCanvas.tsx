@@ -1,19 +1,7 @@
-import { useRef, useEffect, useCallback, useState, useReducer } from 'react';
+import { useRef, useEffect, useCallback, useState } from 'react';
 import { CanvasElement, CanvasOverlay } from '@/styles/Canvas.styled';
 import { animations } from '@/utils/animations';
 import type { SettingList, Settings } from '@/utils/settings';
-
-type Action = { type: string; setting: Partial<Settings> };
-
-function settingsReducer(state: SettingList, action: Action): SettingList {
-  return {
-    ...state,
-    [action.type]: {
-      ...state[action.type],
-      ...(action.setting as Settings),
-    },
-  };
-}
 
 export default function AnimatedCanvas({
   animationName,
@@ -33,7 +21,7 @@ export default function AnimatedCanvas({
     width: 0,
     height: 0,
   });
-  const [allAnimationSettings] = useReducer(settingsReducer, initialAllAnimationSettings);
+  const [allAnimationSettings] = useState(initialAllAnimationSettings);
 
   // ?Resize the canvas to fill browser window dynamically
   const resize = useCallback(() => {
